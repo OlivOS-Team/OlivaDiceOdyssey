@@ -1,0 +1,17 @@
+{
+    "name" : "OlivaDice高阶模块",
+    "author" : "lunzhiPenxil",
+    "namespace" : "OlivaDiceOdyssey",
+    "message_mode" : "old_string",
+    "version" : "3.0.0",
+    "svn" : 1,
+    "compatible_svn" : 95,
+    "priority" : 30030,
+    "support" : [
+        {
+            "sdk" : "all",
+            "platform" : "all",
+            "model" : "all"
+        }
+    ]
+}
