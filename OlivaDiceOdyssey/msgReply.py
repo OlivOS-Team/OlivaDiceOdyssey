@@ -175,37 +175,40 @@ def unity_reply(plugin_event, Proc):
                         tmp_count = 0
                         tmp_page_max = 1
                         tmp_page_now = 1
-                        for mod_this in tmp_res['data']['list']:
-                            tmp_count += 1
-                            tmp_res_list.append(
-                                '[%s] %s' % (
-                                    str(tmp_count),
-                                    mod_this['title']
+                        if len(tmp_res['data']['list']) > 0:
+                            for mod_this in tmp_res['data']['list']:
+                                tmp_count += 1
+                                tmp_res_list.append(
+                                    '[%s] %s' % (
+                                        str(tmp_count),
+                                        mod_this['title']
+                                    )
                                 )
+                            tmp_page_max = tmp_res['data']['totalPages']
+                            tmp_page_now = tmp_page
+                            dictTValue['tCnmodsResult'] = '%s\n---[第%s/%s页]---' % (
+                                '\n'.join(tmp_res_list),
+                                str(tmp_page_now),
+                                str(tmp_page_max)
                             )
-                        tmp_page_max = tmp_res['data']['totalPages']
-                        tmp_page_now = tmp_page
-                        dictTValue['tCnmodsResult'] = '%s\n---[第%s/%s页]---' % (
-                            '\n'.join(tmp_res_list),
-                            str(tmp_page_now),
-                            str(tmp_page_max)
-                        )
-                        tmp_reply_str = dictStrCustom['strOdysseyCnmodsSearch'].format(**dictTValue)
-                        OlivaDiceCore.userConfig.setUserConfigByKey(
-                            userConfigKey = 'cnmodsTemp',
-                            userConfigValue = tmp_res,
-                            botHash = plugin_event.bot_info.hash,
-                            userId = plugin_event.data.user_id,
-                            userType = 'user',
-                            platform = plugin_event.platform['platform']
-                        )
-                        OlivaDiceCore.userConfig.writeUserConfigByUserHash(
-                            userHash = OlivaDiceCore.userConfig.getUserHash(
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsSearch'].format(**dictTValue)
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_res,
+                                botHash = plugin_event.bot_info.hash,
                                 userId = plugin_event.data.user_id,
                                 userType = 'user',
                                 platform = plugin_event.platform['platform']
                             )
-                        )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                        else:
+                            tmp_reply_str = '未找到相关魔都模组搜索结果'
                     except:
                         pass
                 if tmp_reply_str != None:
@@ -225,37 +228,40 @@ def unity_reply(plugin_event, Proc):
                         tmp_count = 0
                         tmp_page_max = 1
                         tmp_page_now = 1
-                        for mod_this in tmp_res['data']['list']:
-                            tmp_count += 1
-                            tmp_res_list.append(
-                                '[%s] %s' % (
-                                    str(tmp_count),
-                                    mod_this['title']
+                        if len(tmp_res['data']['list']) > 0:
+                            for mod_this in tmp_res['data']['list']:
+                                tmp_count += 1
+                                tmp_res_list.append(
+                                    '[%s] %s' % (
+                                        str(tmp_count),
+                                        mod_this['title']
+                                    )
                                 )
+                            tmp_page_max = tmp_res['data']['totalPages']
+                            tmp_page_now = tmp_page
+                            dictTValue['tCnmodsResult'] = '%s\n---[第%s/%s页]---' % (
+                                '\n'.join(tmp_res_list),
+                                str(tmp_page_now),
+                                str(tmp_page_max)
                             )
-                        tmp_page_max = tmp_res['data']['totalPages']
-                        tmp_page_now = tmp_page
-                        dictTValue['tCnmodsResult'] = '%s\n---[第%s/%s页]---' % (
-                            '\n'.join(tmp_res_list),
-                            str(tmp_page_now),
-                            str(tmp_page_max)
-                        )
-                        tmp_reply_str = dictStrCustom['strOdysseyCnmodsLuck'].format(**dictTValue)
-                        OlivaDiceCore.userConfig.setUserConfigByKey(
-                            userConfigKey = 'cnmodsTemp',
-                            userConfigValue = tmp_res,
-                            botHash = plugin_event.bot_info.hash,
-                            userId = plugin_event.data.user_id,
-                            userType = 'user',
-                            platform = plugin_event.platform['platform']
-                        )
-                        OlivaDiceCore.userConfig.writeUserConfigByUserHash(
-                            userHash = OlivaDiceCore.userConfig.getUserHash(
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsLuck'].format(**dictTValue)
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_res,
+                                botHash = plugin_event.bot_info.hash,
                                 userId = plugin_event.data.user_id,
                                 userType = 'user',
                                 platform = plugin_event.platform['platform']
                             )
-                        )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                        else:
+                            tmp_reply_str = '未找到魔都模组推荐结果'
                     except:
                         pass
                 if tmp_reply_str != None:

@@ -3,8 +3,8 @@
     "author" : "lunzhiPenxil",
     "namespace" : "OlivaDiceOdyssey",
     "message_mode" : "old_string",
-    "version" : "3.0.0",
-    "svn" : 1,
+    "version" : "3.0.1",
+    "svn" : 2,
     "compatible_svn" : 95,
     "priority" : 30030,
     "support" : [
