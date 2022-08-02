@@ -51,6 +51,7 @@ OlivaDice高阶模块
 注: 本模块为可选模块。''',
 
     'OlivaDiceOdyssey更新': '''[OlivaDiceOdyssey]
+3.0.2: 支持新版OlivOS
 3.0.0: 初始化项目''',
 
     '魔都模组': '&cnmods',
