@@ -149,10 +149,15 @@ def unity_reply(plugin_event, Proc):
         #此群关闭时中断处理
         if not flag_groupEnable and not flag_force_reply:
             return
-        if isMatchWordStart(tmp_reast_str, 'cnmods'):
-            tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'cnmods')
-            tmp_reast_str = skipSpaceStart(tmp_reast_str)
-            tmp_reast_str = tmp_reast_str.rstrip(' ')
+        if isMatchWordStart(tmp_reast_str, 'cnmods') or isMatchWordStart(tmp_reast_str, 'mdmz'):
+            if isMatchWordStart(tmp_reast_str, 'cnmods'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'cnmods')
+                tmp_reast_str = skipSpaceStart(tmp_reast_str)
+                tmp_reast_str = tmp_reast_str.rstrip(' ')
+            elif isMatchWordStart(tmp_reast_str, 'mdmz'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'mdmz')
+                tmp_reast_str = skipSpaceStart(tmp_reast_str)
+                tmp_reast_str = tmp_reast_str.rstrip(' ')
             if isMatchWordStart(tmp_reast_str, 'search'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'search')
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
