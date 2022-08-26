@@ -196,7 +196,7 @@ def unity_reply(plugin_event, Proc):
                                 str(tmp_page_now),
                                 str(tmp_page_max)
                             )
-                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsSearch'].format(**dictTValue)
+                            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsSearch'], dictTValue)
                             OlivaDiceCore.userConfig.setUserConfigByKey(
                                 userConfigKey = 'cnmodsTemp',
                                 userConfigValue = tmp_res,
@@ -249,7 +249,7 @@ def unity_reply(plugin_event, Proc):
                                 str(tmp_page_now),
                                 str(tmp_page_max)
                             )
-                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsLuck'].format(**dictTValue)
+                            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsLuck'], dictTValue)
                             OlivaDiceCore.userConfig.setUserConfigByKey(
                                 userConfigKey = 'cnmodsTemp',
                                 userConfigValue = tmp_res,
