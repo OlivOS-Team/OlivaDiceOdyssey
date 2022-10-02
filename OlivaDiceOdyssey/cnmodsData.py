@@ -17,3 +17,5 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 strCnmodsMain = 'https://www.cnmods.net/index/moduleListPage.do'
 
 strCnmodsIndex = 'https://www.cnmods.net/#/moduleDetail/index?keyId='
+
+strRulesMain = 'https://api.oliva.icu/rules'

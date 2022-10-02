@@ -26,6 +26,9 @@ def unity_init(plugin_event, Proc):
 
 def data_init(plugin_event, Proc):
     OlivaDiceOdyssey.msgCustomManager.initMsgCustom(Proc.Proc_data['bot_info_dict'])
+    if 'replyContextFliter' in OlivaDiceCore.crossHook.dictHookList:
+        OlivaDiceCore.crossHook.dictHookList['replyContextFliter'].append('rules')
+        OlivaDiceCore.crossHook.dictHookList['replyContextFliter'].append('rule')
 
 def unity_reply(plugin_event, Proc):
     OlivaDiceCore.userConfig.setMsgCount()
@@ -150,13 +153,29 @@ def unity_reply(plugin_event, Proc):
         #此群关闭时中断处理
         if not flag_groupEnable and not flag_force_reply:
             return
-        if isMatchWordStart(tmp_reast_str, 'cnmods') or isMatchWordStart(tmp_reast_str, 'mdmz'):
+        if isMatchWordStart(tmp_reast_str, 'rules') or isMatchWordStart(tmp_reast_str, 'rule'):
+            OlivaDiceOdyssey.msgReply.replyRULES_command(
+                plugin_event = plugin_event,
+                Proc = Proc,
+                tmp_reast_str = tmp_reast_str,
+                isMatchWordStart = isMatchWordStart,
+                getMatchWordStartRight = getMatchWordStartRight,
+                skipSpaceStart = skipSpaceStart,
+                dictStrCustom = dictStrCustom,
+                dictTValue = dictTValue,
+                replyMsg = replyMsg
+            )
+        elif isMatchWordStart(tmp_reast_str, 'cnmods') or isMatchWordStart(tmp_reast_str, 'mdmz') or isMatchWordStart(tmp_reast_str, 'modu'):
             if isMatchWordStart(tmp_reast_str, 'cnmods'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'cnmods')
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
                 tmp_reast_str = tmp_reast_str.rstrip(' ')
             elif isMatchWordStart(tmp_reast_str, 'mdmz'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'mdmz')
+                tmp_reast_str = skipSpaceStart(tmp_reast_str)
+                tmp_reast_str = tmp_reast_str.rstrip(' ')
+            elif isMatchWordStart(tmp_reast_str, 'modu'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'modu')
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
                 tmp_reast_str = tmp_reast_str.rstrip(' ')
             if isMatchWordStart(tmp_reast_str, 'search'):
@@ -379,3 +398,119 @@ def unity_reply(plugin_event, Proc):
             else:
                 OlivaDiceCore.msgReply.replyMsgLazyHelpByEvent(plugin_event, 'cnmods')
             return
+
+def replyRULES_command(
+    plugin_event,
+    Proc,
+    tmp_reast_str,
+    isMatchWordStart,
+    getMatchWordStartRight,
+    skipSpaceStart,
+    dictStrCustom,
+    dictTValue,
+    replyMsg
+):
+    tmp_hagID = None
+    tmp_bothash = plugin_event.bot_info.hash
+    tmp_userID = plugin_event.data.user_id
+    if isMatchWordStart(tmp_reast_str, 'rules'):
+        tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'rules')
+        tmp_reast_str = skipSpaceStart(tmp_reast_str)
+        tmp_reast_str = tmp_reast_str.rstrip(' ')
+    elif isMatchWordStart(tmp_reast_str, 'rule'):
+        tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'rule')
+        tmp_reast_str = skipSpaceStart(tmp_reast_str)
+        tmp_reast_str = tmp_reast_str.rstrip(' ')
+    if tmp_reast_str != '':
+        tmp_keyword = tmp_reast_str
+        tmp_res = OlivaDiceOdyssey.webTool.getRulesReq(key = tmp_keyword)
+        if (
+            type(tmp_res) == dict and 'code' in tmp_res and 'status' in tmp_res
+        ) and (
+            tmp_res['code'] == 0 and tmp_res['status'] == 200
+        ):
+            if 'data' in tmp_res and 'result' in tmp_res['data'] and type(tmp_res['data']['result']) == list:
+                if len(tmp_res['data']['result']) == 0:
+                    tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesNone'], dictTValue)
+                    replyMsg(plugin_event, tmp_reply_str)
+                elif len(tmp_res['data']['result']) == 1:
+                    data_this = tmp_res['data']['result'][0]
+                    replyRULES_command_getResult(
+                        data_this = data_this,
+                        plugin_event = plugin_event,
+                        dictStrCustom = dictStrCustom,
+                        dictTValue = dictTValue,
+                        replyMsg = replyMsg
+                    )
+                elif len(tmp_res['data']['result']) > 1:
+                    data_list = tmp_res['data']['result']
+                    if len(data_list) > 8:
+                        data_list = data_list[:8]
+                    result_list = []
+                    count = 1
+                    for data_list_this in data_list:
+                        tmp_data_list_this_rule = 'N/A'
+                        tmp_data_list_this_keyword = 'N/A'
+                        tmp_data_list_this_content = 'N/A'
+                        if type(data_list_this) == dict and 'rule' in data_list_this and 'keyword' in data_list_this and 'content' in data_list_this:
+                            tmp_data_list_this_rule = data_list_this['rule']
+                            tmp_data_list_this_keyword = data_list_this['keyword']
+                            tmp_data_list_this_content = data_list_this['content']
+                        result_list.append(
+                            '%d. [%s]%s' % (
+                                count,
+                                tmp_data_list_this_rule,
+                                tmp_data_list_this_keyword
+                            )
+                        )
+                        count += 1
+                    dictTValue['tResult'] = '\n'.join(result_list)
+                    tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesList'], dictTValue)
+                    replyMsg(plugin_event, tmp_reply_str)
+                    tmp_select:str = OlivaDiceCore.msgReplyModel.replyCONTEXT_regWait(
+                        plugin_event = plugin_event,
+                        flagBlock = 'allowCommand',
+                        hash = OlivaDiceCore.msgReplyModel.contextRegHash([None, tmp_userID])
+                    )
+                    if tmp_select == None:
+                        pass
+                    elif type(tmp_select) == str:
+                        if tmp_select.isdigit():
+                            tmp_select = int(tmp_select)
+                            if tmp_select >= 1 and tmp_select <= 8:
+                                data_this = tmp_res['data']['result'][tmp_select - 1]
+                                replyRULES_command_getResult(
+                                    data_this = data_this,
+                                    plugin_event = plugin_event,
+                                    dictStrCustom = dictStrCustom,
+                                    dictTValue = dictTValue,
+                                    replyMsg = replyMsg
+                                )
+                            else:
+                                dictTValue['tResult'] = '超出范围'
+                                tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesError'], dictTValue)
+                                replyMsg(plugin_event, tmp_reply_str)
+                        else:
+                            dictTValue['tResult'] = '请输入数字'
+                            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesError'], dictTValue)
+                            replyMsg(plugin_event, tmp_reply_str)
+        else:
+            dictTValue['tResult'] = 'API连接失败'
+            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesError'], dictTValue)
+            replyMsg(plugin_event, tmp_reply_str)
+
+def replyRULES_command_getResult(
+    data_this,
+    plugin_event,
+    dictStrCustom,
+    dictTValue,
+    replyMsg
+):
+    if type(data_this) == dict and 'rule' in data_this and 'keyword' in data_this and 'content' in data_this:
+        dictTValue['tResult'] = '[%s] - %s\n%s' % (
+            data_this['rule'],
+            data_this['keyword'],
+            data_this['content']
+        )
+        tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesShow'], dictTValue)
+        replyMsg(plugin_event, tmp_reply_str)

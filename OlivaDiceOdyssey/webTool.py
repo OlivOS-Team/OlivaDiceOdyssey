@@ -43,3 +43,24 @@ def getCnmodsReq(title = None, page = None):
     except:
         pass
     return res
+
+def getRulesReq(key = None):
+    res = None
+    tmp_res = None
+    tmp_value = {}
+    send_url = OlivaDiceOdyssey.cnmodsData.strRulesMain
+    if key != None:
+        tmp_value['key'] = str(key)
+    if key != None:
+        send_url += '?' + urlencode(tmp_value)
+    headers = {
+        'User-Agent': OlivaDiceCore.data.bot_version_short_header
+    }
+    try:
+        msg_res = req.request("GET", send_url, headers = headers)
+        res_text = str(msg_res.text)
+        tmp_res = json.loads(res_text)
+        res = tmp_res
+    except:
+        pass
+    return res

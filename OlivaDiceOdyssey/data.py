@@ -15,6 +15,6 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 '''
 
 
-OlivaDiceOdyssey_ver = '3.0.5'
-OlivaDiceOdyssey_svn = 6
+OlivaDiceOdyssey_ver = '3.0.6'
+OlivaDiceOdyssey_svn = 7
 OlivaDiceOdyssey_ver_short = '%s(%s)' % (str(OlivaDiceOdyssey_ver), str(OlivaDiceOdyssey_svn))

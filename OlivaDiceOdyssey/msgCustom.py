@@ -22,7 +22,11 @@ dictStrCustomDict = {}
 
 dictStrCustom = {
     'strOdysseyCnmodsSearch': '魔都模组搜索结果如下:\n{tCnmodsResult}',
-    'strOdysseyCnmodsLuck': '魔都模组推荐如下:\n{tCnmodsResult}'
+    'strOdysseyCnmodsLuck': '魔都模组推荐如下:\n{tCnmodsResult}',
+    'strOdysseyRulesNone': '没有找到合适的规则',
+    'strOdysseyRulesShow': '规则速查结果如下:\n{tResult}',
+    'strOdysseyRulesList': '规则速查找到如下待选结果:\n{tResult}\n输入序号以查看对应结果',
+    'strOdysseyRulesError': '规则速查发生错误:\n{tResult}'
 }
 
 dictStrConst = {
