@@ -18,6 +18,12 @@ import OlivOS
 import OlivaDiceCore
 import OlivaDiceOdyssey
 
+dictConsoleSwitchTemplate = {
+    'default' : {
+        'odysseyRulesItemLimit': 8
+    }
+}
+
 dictStrCustomDict = {}
 
 dictStrCustom = {
@@ -26,6 +32,7 @@ dictStrCustom = {
     'strOdysseyRulesNone': '没有找到合适的规则',
     'strOdysseyRulesShow': '规则速查结果如下:\n{tResult}',
     'strOdysseyRulesList': '规则速查找到如下待选结果:\n{tResult}\n输入序号以查看对应结果',
+    'strOdysseyRulesSplit': '\n',
     'strOdysseyRulesError': '规则速查发生错误:\n{tResult}'
 }
 

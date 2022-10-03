@@ -35,3 +35,11 @@ def initMsgCustom(bot_info_dict):
     OlivaDiceCore.msgCustom.dictGValue.update(OlivaDiceOdyssey.msgCustom.dictGValue)
     OlivaDiceCore.msgCustom.dictTValue.update(OlivaDiceOdyssey.msgCustom.dictTValue)
     OlivaDiceCore.userConfig.dictUserConfigNoteDefault.update(OlivaDiceOdyssey.msgCustom.dictUserConfigNoteDefault)
+    for dictConsoleSwitchTemplate_this in OlivaDiceOdyssey.msgCustom.dictConsoleSwitchTemplate:
+        if dictConsoleSwitchTemplate_this in OlivaDiceCore.console.dictConsoleSwitchTemplate:
+            OlivaDiceCore.console.dictConsoleSwitchTemplate[dictConsoleSwitchTemplate_this].update(
+                OlivaDiceOdyssey.msgCustom.dictConsoleSwitchTemplate[dictConsoleSwitchTemplate_this]
+            )
+    OlivaDiceCore.console.initConsoleSwitchByBotDict(bot_info_dict)
+    OlivaDiceCore.console.readConsoleSwitch()
+    OlivaDiceCore.console.saveConsoleSwitch()

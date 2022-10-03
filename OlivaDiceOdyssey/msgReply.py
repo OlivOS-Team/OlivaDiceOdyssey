@@ -421,15 +421,35 @@ def replyRULES_command(
         tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'rule')
         tmp_reast_str = skipSpaceStart(tmp_reast_str)
         tmp_reast_str = tmp_reast_str.rstrip(' ')
-    if tmp_reast_str != '':
-        tmp_keyword = tmp_reast_str
-        tmp_res = OlivaDiceOdyssey.webTool.getRulesReq(key = tmp_keyword)
+    
+    [tmp_keyword, tmp_page] = OlivaDiceCore.msgReply.getNumberPara(tmp_reast_str, reverse = True)
+    if tmp_page == '' or not tmp_page.isdigit():
+        tmp_page = 1
+    else:
+        tmp_page = int(tmp_page)
+    if tmp_page < 1:
+        tmp_page = 1
+    tmp_keyword = tmp_keyword.rstrip(' ')
+    tmp_item_max = 8
+    tmp_item_max = OlivaDiceCore.console.getConsoleSwitchByHash(
+        'odysseyRulesItemLimit',
+        tmp_bothash
+    )
+    if not type(tmp_item_max) == int:
+        tmp_item_max = 8
+    if tmp_item_max < 1:
+        tmp_item_max = 8
+    tmp_total_page = 0
+    if tmp_keyword != '':
+        tmp_res = OlivaDiceOdyssey.webTool.getRulesReq(key = tmp_keyword, page = tmp_page - 1, item_max = tmp_item_max)
         if (
             type(tmp_res) == dict and 'code' in tmp_res and 'status' in tmp_res
         ) and (
             tmp_res['code'] == 0 and tmp_res['status'] == 200
         ):
             if 'data' in tmp_res and 'result' in tmp_res['data'] and type(tmp_res['data']['result']) == list:
+                if 'total' in tmp_res['data'] and type(tmp_res['data']['total']) == int:
+                    tmp_total_page = int(tmp_res['data']['total'] / tmp_item_max) + 1
                 if len(tmp_res['data']['result']) == 0:
                     tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesNone'], dictTValue)
                     replyMsg(plugin_event, tmp_reply_str)
@@ -444,8 +464,8 @@ def replyRULES_command(
                     )
                 elif len(tmp_res['data']['result']) > 1:
                     data_list = tmp_res['data']['result']
-                    if len(data_list) > 8:
-                        data_list = data_list[:8]
+                    if len(data_list) > tmp_item_max:
+                        data_list = data_list[:tmp_item_max]
                     result_list = []
                     count = 1
                     for data_list_this in data_list:
@@ -464,7 +484,11 @@ def replyRULES_command(
                             )
                         )
                         count += 1
-                    dictTValue['tResult'] = '\n'.join(result_list)
+                    dictTValue['tResult'] = '%s\n====[第%d/%d页]====' % (
+                        OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesSplit'], dictTValue).join(result_list),
+                        tmp_page,
+                        tmp_total_page
+                    )
                     tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesList'], dictTValue)
                     replyMsg(plugin_event, tmp_reply_str)
                     tmp_select:str = OlivaDiceCore.msgReplyModel.replyCONTEXT_regWait(

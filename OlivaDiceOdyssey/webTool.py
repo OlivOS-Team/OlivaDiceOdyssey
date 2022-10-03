@@ -44,13 +44,17 @@ def getCnmodsReq(title = None, page = None):
         pass
     return res
 
-def getRulesReq(key = None):
+def getRulesReq(key = None, page = None, item_max = None):
     res = None
     tmp_res = None
     tmp_value = {}
     send_url = OlivaDiceOdyssey.cnmodsData.strRulesMain
     if key != None:
         tmp_value['key'] = str(key)
+    if page != None:
+        tmp_value['page'] = str(page)
+    if item_max != None:
+        tmp_value['item_max'] = str(item_max)
     if key != None:
         send_url += '?' + urlencode(tmp_value)
     headers = {
