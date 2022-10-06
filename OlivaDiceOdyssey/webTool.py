@@ -35,7 +35,7 @@ def getCnmodsReq(title = None, page = None):
     headers = {
         'User-Agent': OlivaDiceCore.data.bot_version_short_header
     }
-    msg_res = req.request("GET", send_url, headers = headers)
+    msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
     res_text = str(msg_res.text)
     try:
         tmp_res = json.loads(res_text)
@@ -61,7 +61,7 @@ def getRulesReq(key = None, page = None, item_max = None):
         'User-Agent': OlivaDiceCore.data.bot_version_short_header
     }
     try:
-        msg_res = req.request("GET", send_url, headers = headers)
+        msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
         res_text = str(msg_res.text)
         tmp_res = json.loads(res_text)
         res = tmp_res
