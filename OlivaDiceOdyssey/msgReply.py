@@ -153,7 +153,7 @@ def unity_reply(plugin_event, Proc):
         #此群关闭时中断处理
         if not flag_groupEnable and not flag_force_reply:
             return
-        if isMatchWordStart(tmp_reast_str, 'rules') or isMatchWordStart(tmp_reast_str, 'rule'):
+        if isMatchWordStart(tmp_reast_str, 'rules', isCommand = True) or isMatchWordStart(tmp_reast_str, 'rule', isCommand = True):
             OlivaDiceOdyssey.msgReply.replyRULES_command(
                 plugin_event = plugin_event,
                 Proc = Proc,
@@ -165,7 +165,7 @@ def unity_reply(plugin_event, Proc):
                 dictTValue = dictTValue,
                 replyMsg = replyMsg
             )
-        elif isMatchWordStart(tmp_reast_str, 'cnmods') or isMatchWordStart(tmp_reast_str, 'mdmz') or isMatchWordStart(tmp_reast_str, 'modu'):
+        elif isMatchWordStart(tmp_reast_str, 'cnmods', isCommand = True) or isMatchWordStart(tmp_reast_str, 'mdmz', isCommand = True) or isMatchWordStart(tmp_reast_str, 'modu', isCommand = True):
             if isMatchWordStart(tmp_reast_str, 'cnmods'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'cnmods')
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
