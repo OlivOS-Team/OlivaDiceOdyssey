@@ -44,13 +44,13 @@ def getCnmodsReq(title = None, page = None):
         pass
     return res
 
-def getRulesReq(key = None, page = None, item_max = None):
+def getRulesReq(key:'str|None' = None, page = None, item_max = None):
     res = None
     tmp_res = None
     tmp_value = {}
     send_url = OlivaDiceOdyssey.cnmodsData.strRulesMain
     if key != None:
-        tmp_value['key'] = str(key)
+        tmp_value['key'] = str('%'.join(key))
     if page != None:
         tmp_value['page'] = str(page)
     if item_max != None:
@@ -61,6 +61,7 @@ def getRulesReq(key = None, page = None, item_max = None):
         'User-Agent': OlivaDiceCore.data.bot_version_short_header
     }
     try:
+        print(send_url)
         msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
         res_text = str(msg_res.text)
         tmp_res = json.loads(res_text)
