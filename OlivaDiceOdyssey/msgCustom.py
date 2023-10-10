@@ -20,7 +20,8 @@ import OlivaDiceOdyssey
 
 dictConsoleSwitchTemplate = {
     'default' : {
-        'odysseyRulesItemLimit': 8
+        'odysseyRulesItemLimit': 8,
+        'odysseyKOOKBotMarketPulseEnable': 0
     }
 }
 
@@ -33,7 +34,8 @@ dictStrCustom = {
     'strOdysseyRulesShow': '规则速查结果如下:\n{tResult}',
     'strOdysseyRulesList': '规则速查找到如下待选结果:\n{tResult}\n输入序号以查看对应结果',
     'strOdysseyRulesSplit': '\n',
-    'strOdysseyRulesError': '规则速查发生错误:\n{tResult}'
+    'strOdysseyRulesError': '规则速查发生错误:\n{tResult}',
+    'strOdysseyKOOKBotMarketPulseUUID': '-'
 }
 
 dictStrConst = {
