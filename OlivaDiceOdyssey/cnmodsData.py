@@ -14,8 +14,8 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 @Desc      :   None
 '''
 
-strCnmodsMain = 'https://www.cnmods.net/index/moduleListPage.do'
+strCnmodsMain = 'http://cnmods.net/prod-api/index/moduleListPage.do'
 
-strCnmodsIndex = 'https://www.cnmods.net/#/moduleDetail/index?keyId='
+strCnmodsIndex = 'http://cnmods.net/web/moduleDetail?keyId='
 
 strRulesMain = 'https://api.oliva.icu/rules'
