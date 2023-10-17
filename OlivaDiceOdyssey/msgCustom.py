@@ -21,7 +21,9 @@ import OlivaDiceOdyssey
 dictConsoleSwitchTemplate = {
     'default' : {
         'odysseyRulesItemLimit': 8,
-        'odysseyKOOKBotMarketPulseEnable': 0
+        'odysseyKOOKBotMarketPulseEnable': 0,
+        'odysseyKOOKPlayGameMode': 1,
+        'odysseyKOOKPlayGameMusicSoftware': 0
     }
 }
 
@@ -35,7 +37,10 @@ dictStrCustom = {
     'strOdysseyRulesList': '规则速查找到如下待选结果:\n{tResult}\n输入序号以查看对应结果',
     'strOdysseyRulesSplit': '\n',
     'strOdysseyRulesError': '规则速查发生错误:\n{tResult}',
-    'strOdysseyKOOKBotMarketPulseUUID': '-'
+    'strOdysseyKOOKBotMarketPulseUUID': '-',
+    'strOdysseyKOOKPlayGameMusicName': '-',
+    'strOdysseyKOOKPlayGameMusicSinger': '-',
+    'strOdysseyKOOKPlayGameID': '6',
 }
 
 dictStrConst = {

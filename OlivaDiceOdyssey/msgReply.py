@@ -25,11 +25,12 @@ def unity_init(plugin_event, Proc):
     pass
 
 def data_init(plugin_event, Proc):
+    OlivaDiceOdyssey.data.gProc = Proc
     OlivaDiceOdyssey.msgCustomManager.initMsgCustom(Proc.Proc_data['bot_info_dict'])
     if 'replyContextPrefixFliter' in OlivaDiceCore.crossHook.dictHookList:
         OlivaDiceCore.crossHook.dictHookList['replyContextPrefixFliter'].append('rules')
         OlivaDiceCore.crossHook.dictHookList['replyContextPrefixFliter'].append('rule')
-    OlivaDiceOdyssey.webTool.initKOOKBotMarketPulseThread(Proc.Proc_data['bot_info_dict'])
+    OlivaDiceOdyssey.webTool.initKOOKManageThread(Proc.Proc_data['bot_info_dict'])
 
 def unity_reply(plugin_event, Proc):
     OlivaDiceCore.userConfig.setMsgCount()

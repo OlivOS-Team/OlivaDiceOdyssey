@@ -14,6 +14,7 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 @Desc      :   None
 '''
 
+import OlivOS
 import OlivaDiceCore
 import OlivaDiceOdyssey
 
@@ -22,6 +23,7 @@ from urllib.parse import urlencode
 import json
 import time
 import threading
+import hashlib
 
 def getCnmodsReq(title = None, page = None):
     res = None
@@ -91,11 +93,14 @@ def sendKOOKBotMarketPulse(token:str):
 
 
 
-def sendKOOKBotMarketPulseThread(botDict:dict):
+def sendKOOKManageThread(botDict:dict):
     dictTimerCount = {}
+    dictPlayGameReg = {}
+    listPlayGameMusicSoftware = ['cloudmusic', 'qqmusic', 'kugou']
     checkF = 5
     while True:
         for botHash in botDict:
+            # KOOKBotMarketPulse
             flag_odysseyKOOKBotMarketPulseEnable = OlivaDiceCore.console.getConsoleSwitchByHash(
                 'odysseyKOOKBotMarketPulseEnable',
                 botHash
@@ -127,10 +132,136 @@ def sendKOOKBotMarketPulseThread(botDict:dict):
                     dictTimerCount[botHash] = 0
             else:
                 dictTimerCount[botHash] = 0
+
+            # KOOK在玩游戏/听音乐状态
+            flag_odysseyKOOKPlayGameMode = OlivaDiceCore.console.getConsoleSwitchByHash(
+                'odysseyKOOKPlayGameMode',
+                botHash
+            )
+            str_strOdysseyKOOKPlayGameMusicName = OlivaDiceCore.msgCustom.dictStrCustomDict.get(botHash, {}).get('strOdysseyKOOKPlayGameMusicName', '听啥咧')
+            str_strOdysseyKOOKPlayGameMusicSinger = OlivaDiceCore.msgCustom.dictStrCustomDict.get(botHash, {}).get('strOdysseyKOOKPlayGameMusicSinger', '谁唱的')
+            flag_odysseyKOOKPlayGameMusicSoftware = OlivaDiceCore.console.getConsoleSwitchByHash(
+                'odysseyKOOKPlayGameMusicSoftware',
+                botHash
+            )
+            str_strOdysseyKOOKPlayGameMusicSoftware = listPlayGameMusicSoftware[0]
+            if flag_odysseyKOOKPlayGameMusicSoftware < len(listPlayGameMusicSoftware) \
+            and flag_odysseyKOOKPlayGameMusicSoftware >= 0:
+                str_strOdysseyKOOKPlayGameMusicSoftware = listPlayGameMusicSoftware[flag_odysseyKOOKPlayGameMusicSoftware]
+            str_strOdysseyKOOKPlayGameID = OlivaDiceCore.msgCustom.dictStrCustomDict.get(botHash, {}).get('strOdysseyKOOKPlayGameID', '0')
+            int_strOdysseyKOOKPlayGameID = 1521178
+            try:
+                int_strOdysseyKOOKPlayGameID = int(str_strOdysseyKOOKPlayGameID)
+            except:
+                pass
+            dictPlayGameReg.setdefault(botHash, {
+                'data_type': -1,
+                'id': -1,
+                'music_name': None,
+                'singer': None,
+                'software': None
+            })
+            hash_playgame_old_obj = hashlib.new('md5')
+            for key in dictPlayGameReg[botHash]:
+                hash_playgame_old_obj.update(('|' + key + ':' + str(dictPlayGameReg[botHash][key]) + '|').encode('utf-8'))
+            hash_playgame_old = hash_playgame_old_obj.hexdigest()
+            if 0 == flag_odysseyKOOKPlayGameMode:
+                dictPlayGameReg[botHash].update({
+                    'data_type': 0,
+                    'id': -1,
+                    'music_name': None,
+                    'singer': None,
+                    'software': None
+                })
+            elif 1 == flag_odysseyKOOKPlayGameMode:
+                dictPlayGameReg[botHash].update({
+                    'data_type': 1,
+                    'id': 1521178,
+                    'music_name': None,
+                    'singer': None,
+                    'software': None
+                })
+            elif 2 == flag_odysseyKOOKPlayGameMode:
+                dictPlayGameReg[botHash].update({
+                    'data_type': 2,
+                    'id': -1,
+                    'music_name': str_strOdysseyKOOKPlayGameMusicName,
+                    'singer': str_strOdysseyKOOKPlayGameMusicSinger,
+                    'software': str_strOdysseyKOOKPlayGameMusicSoftware
+                })
+            elif 3 == flag_odysseyKOOKPlayGameMode:
+                dictPlayGameReg[botHash].update({
+                    'data_type': 1,
+                    'id': int_strOdysseyKOOKPlayGameID,
+                    'music_name': None,
+                    'singer': None,
+                    'software': None
+                })
+            hash_playgame_new_obj = hashlib.new('md5')
+            for key in dictPlayGameReg[botHash]:
+                hash_playgame_new_obj.update(('|' + key + ':' + str(dictPlayGameReg[botHash][key]) + '|').encode('utf-8'))
+            hash_playgame_new = hash_playgame_new_obj.hexdigest()
+            if hash_playgame_old != hash_playgame_new:
+                if 0 == flag_odysseyKOOKPlayGameMode:
+                    fake_plugin_event = OlivOS.API.Event(
+                        OlivOS.contentAPI.fake_sdk_event(
+                            bot_info = OlivaDiceOdyssey.data.gProc.Proc_data['bot_info_dict'][botHash],
+                            fakename = 'OlivaDice高阶模块'
+                        ),
+                        OlivaDiceOdyssey.data.gProc.log
+                    )
+                    try:
+                        if fake_plugin_event.indeAPI.hasAPI('set_playgame_delete_activity_all'):
+                            fake_plugin_event.indeAPI.set_playgame_delete_activity_all()
+                    except:
+                        pass
+                elif 1 == flag_odysseyKOOKPlayGameMode:
+                    fake_plugin_event = OlivOS.API.Event(
+                        OlivOS.contentAPI.fake_sdk_event(
+                            bot_info = OlivaDiceOdyssey.data.gProc.Proc_data['bot_info_dict'][botHash],
+                            fakename = 'OlivaDice高阶模块'
+                        ),
+                        OlivaDiceOdyssey.data.gProc.log
+                    )
+                    try:
+                        if fake_plugin_event.indeAPI.hasAPI('set_playgame_activity_game'):
+                            fake_plugin_event.indeAPI.set_playgame_activity_game(1521178)
+                    except:
+                        pass
+                elif 2 == flag_odysseyKOOKPlayGameMode:
+                    fake_plugin_event = OlivOS.API.Event(
+                        OlivOS.contentAPI.fake_sdk_event(
+                            bot_info = OlivaDiceOdyssey.data.gProc.Proc_data['bot_info_dict'][botHash],
+                            fakename = 'OlivaDice高阶模块'
+                        ),
+                        OlivaDiceOdyssey.data.gProc.log
+                    )
+                    try:
+                        if fake_plugin_event.indeAPI.hasAPI('set_playgame_activity_music'):
+                            fake_plugin_event.indeAPI.set_playgame_activity_music(
+                                str_strOdysseyKOOKPlayGameMusicName,
+                                str_strOdysseyKOOKPlayGameMusicSinger,
+                                str_strOdysseyKOOKPlayGameMusicSoftware
+                            )
+                    except:
+                        pass
+                elif 3 == flag_odysseyKOOKPlayGameMode:
+                    fake_plugin_event = OlivOS.API.Event(
+                        OlivOS.contentAPI.fake_sdk_event(
+                            bot_info = OlivaDiceOdyssey.data.gProc.Proc_data['bot_info_dict'][botHash],
+                            fakename = 'OlivaDice高阶模块'
+                        ),
+                        OlivaDiceOdyssey.data.gProc.log
+                    )
+                    try:
+                        if fake_plugin_event.indeAPI.hasAPI('set_playgame_activity_game'):
+                            fake_plugin_event.indeAPI.set_playgame_activity_game(int_strOdysseyKOOKPlayGameID)
+                    except:
+                        pass
         time.sleep(checkF)
 
-def initKOOKBotMarketPulseThread(botDict:dict):
+def initKOOKManageThread(botDict:dict):
     threading.Thread(
-        target = OlivaDiceOdyssey.webTool.sendKOOKBotMarketPulseThread,
+        target = OlivaDiceOdyssey.webTool.sendKOOKManageThread,
         args = (botDict, )
     ).start()
