@@ -19,3 +19,4 @@ strCnmodsMain = 'http://cnmods.net/prod-api/index/moduleListPage.do'
 strCnmodsIndex = 'http://cnmods.net/web/moduleDetail?keyId='
 
 strRulesMain = 'https://api.oliva.icu/rules'
+strExtiverseDeckMain = 'https://api.oliva.icu/extiverse/deck/index.json'

@@ -24,6 +24,62 @@ import json
 import time
 import threading
 import hashlib
+import os
+
+gExtiverseDeck = {}
+
+def getExtiverseDeckRemote():
+    global gExtiverseDeck
+    res = None
+    tmp_res = None
+    send_url = OlivaDiceOdyssey.cnmodsData.strExtiverseDeckMain
+    headers = {
+        'User-Agent': OlivaDiceCore.data.bot_version_short_header
+    }
+    msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
+    res_text = str(msg_res.text)
+    try:
+        tmp_res = json.loads(res_text)
+        res = tmp_res
+        gExtiverseDeck = res
+    except:
+        pass
+    return res
+
+def downloadExtiverseDeckRemote(name, botHash = 'unity'):
+    global gExtiverseDeck
+    res = False
+    flag_hit = False
+    res_text = None
+    deck_type = 'deckclassic'
+    if type(gExtiverseDeck) is dict \
+    and 'classic' in gExtiverseDeck \
+    and type(gExtiverseDeck['classic']) is list:
+        for item in gExtiverseDeck['classic']:
+            if type(item) is dict \
+            and 'name' in item \
+            and 'download_link' in item \
+            and type(item['download_link']) is list \
+            and item['name'] == name:
+                for send_url in item['download_link']:
+                    headers = {
+                        'User-Agent': OlivaDiceCore.data.bot_version_short_header
+                    }
+                    try:
+                        msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
+                        res_text = str(msg_res.text)
+                        flag_hit = True
+                    except:
+                        pass
+                    if flag_hit:
+                        res = True
+                        deck_type = 'deckclassic'
+                        break
+    # 这里要写入文件
+    if flag_hit:
+        with open(os.path.join('plugin', 'data', 'OlivaDice', botHash, 'extend', deck_type, name + '.json'), 'w', encoding = 'utf-8') as f:
+            f.write(res_text)
+    return res
 
 def getCnmodsReq(title = None, page = None):
     res = None
@@ -72,7 +128,6 @@ def getRulesReq(key:'str|None' = None, page = None, item_max = None):
     except:
         pass
     return res
-
 
 def sendKOOKBotMarketPulse(token:str):
     res = None
