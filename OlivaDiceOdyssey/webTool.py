@@ -25,8 +25,40 @@ import time
 import threading
 import hashlib
 import os
+import zipfile
 
 gExtiverseDeck = {}
+
+def releaseDir(dir_path):
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+def releaseToDirForFile(dir_path):
+    tmp_path_list = dir_path.rstrip('/').split('/')
+    if len(tmp_path_list) > 0:
+        tmp_path_list = tmp_path_list[:-1]
+    for tmp_path_list_index in range(len(tmp_path_list)):
+        if tmp_path_list[tmp_path_list_index] != '':
+        	releaseDir('/'.join(tmp_path_list[:tmp_path_list_index + 1]))
+
+def GETHttpFile(url, path):
+    res = False
+    send_url = url
+    headers = {
+        'User-Agent': 'OlivaDiceOdyssey/%s' % OlivaDiceOdyssey.data.OlivaDiceOdyssey_ver_short
+    }
+    try:
+        msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
+        releaseToDirForFile(path)
+        with open(path, 'wb+') as tmp:
+            tmp.write(msg_res.content)
+        if msg_res.status_code in [200, 300]:
+            res = True
+        else:
+            res = False
+    except:
+        res = False
+    return res
 
 def getExtiverseDeckRemote():
     global gExtiverseDeck
@@ -51,35 +83,82 @@ def downloadExtiverseDeckRemote(name, botHash = 'unity'):
     res = False
     flag_hit = False
     res_text = None
+    res_resource_list = None
     deck_type = 'deckclassic'
-    if type(gExtiverseDeck) is dict \
-    and 'classic' in gExtiverseDeck \
-    and type(gExtiverseDeck['classic']) is list:
-        for item in gExtiverseDeck['classic']:
-            if type(item) is dict \
-            and 'name' in item \
-            and 'download_link' in item \
-            and type(item['download_link']) is list \
-            and item['name'] == name:
-                for send_url in item['download_link']:
-                    headers = {
-                        'User-Agent': OlivaDiceCore.data.bot_version_short_header
-                    }
-                    try:
-                        msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
-                        res_text = str(msg_res.text)
-                        flag_hit = True
-                    except:
-                        pass
-                    if flag_hit:
-                        res = True
-                        deck_type = 'deckclassic'
-                        break
+    for deck_meta_type in ['classic', 'yaml', 'excel']:
+        if type(gExtiverseDeck) is dict \
+        and deck_meta_type in gExtiverseDeck \
+        and type(gExtiverseDeck[deck_meta_type]) is list:
+            for item in gExtiverseDeck[deck_meta_type]:
+                if type(item) is dict \
+                and 'name' in item \
+                and 'download_link' in item \
+                and type(item['download_link']) is list \
+                and item['name'] == name:
+                    if 'resource_link' in item:
+                        res_resource_list = item['resource_link']
+                    for send_url in item['download_link']:
+                        headers = {
+                            'User-Agent': OlivaDiceCore.data.bot_version_short_header
+                        }
+                        try:
+                            msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
+                            res_text = str(msg_res.text)
+                            flag_hit = True
+                        except:
+                            pass
+                        if flag_hit:
+                            res = True
+                            deck_type = {
+                                'classic': 'deckclassic',
+                                'yaml': 'deckyaml',
+                                'excel': 'deckexcel'
+                            }[deck_meta_type]
+                            break
     # 这里要写入文件
     if flag_hit:
-        with open(os.path.join('plugin', 'data', 'OlivaDice', botHash, 'extend', deck_type, name + '.json'), 'w', encoding = 'utf-8') as f:
+        checkDict = {
+            'deckclassic': '.json',
+            'deckyaml': '.yaml',
+            'deckexcel': '.xlsx'
+        }
+        dfix = checkDict[deck_type]
+        with open(os.path.join('plugin', 'data', 'OlivaDice', botHash, 'extend', deck_type, name + dfix), 'w', encoding = 'utf-8') as f:
             f.write(res_text)
+        # 这里下载并解压资源文件
+        if res_resource_list is not None \
+        and type(res_resource_list) is list:
+            for resource_url_this in res_resource_list:
+                if type(resource_url_this) is str:
+                    GETHttpFile(resource_url_this, 'plugin/data/OlivaDice/unity/update/tmp_deck_resource.zip')
+                    with support_gbk(
+                        zipfile.ZipFile(
+                            'plugin/data/OlivaDice/unity/update/tmp_deck_resource.zip',
+                            'r',
+                            zipfile.ZIP_DEFLATED
+                        )
+                    ) as resourceFile:
+                        resourceFile_list = resourceFile.namelist()
+                        for resourceFile_list_this in resourceFile_list:
+                            try:
+                                resourceFile.extract(resourceFile_list_this, 'data')
+                            except:
+                                pass
     return res
+
+def support_gbk(zip_file: zipfile.ZipFile):
+    name_to_info = zip_file.NameToInfo
+    # copy map first
+    for name, info in name_to_info.copy().items():
+        try:
+            real_name = name.encode('cp437').decode('gbk')
+        except:
+            real_name = name
+        if real_name != name:
+            info.filename = real_name
+            del name_to_info[name]
+            name_to_info[real_name] = info
+    return zip_file
 
 def getCnmodsReq(title = None, page = None):
     res = None
