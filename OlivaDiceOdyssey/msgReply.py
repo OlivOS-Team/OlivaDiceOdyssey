@@ -335,11 +335,13 @@ def unity_reply(plugin_event, Proc):
                                         if len(tmp_tag_list) > 0:
                                             tmp_tag_str = '%s\n' % ' - '.join(tmp_tag_list)
                                         url_index = OlivaDiceOdyssey.cnmodsData.strCnmodsIndex
-                                        tmp_cnmods_str = '《%s》\n%s%s\n链接：%s' % (
+                                        url_index_mobile = OlivaDiceOdyssey.cnmodsData.strCnmodsIndexMobile
+                                        tmp_cnmods_str = '《%s》\n%s%s\n链接：%s\n移动端：%s' % (
                                             tmp_get_res['title'],
                                             tmp_tag_str,
                                             html.unescape(re.sub('\\</{0,1}(.+?)\\>', '', tmp_get_res['opinion'])),
-                                            url_index + str(tmp_get_res['keyId'])
+                                            url_index + str(tmp_get_res['keyId']),
+                                            url_index_mobile + str(tmp_get_res['keyId'])
                                         )
                                         tmp_reply_str = tmp_cnmods_str
                             except:
@@ -382,11 +384,13 @@ def unity_reply(plugin_event, Proc):
                                 if len(tmp_tag_list) > 0:
                                     tmp_tag_str = '%s\n' % ' - '.join(tmp_tag_list)
                                 url_index = OlivaDiceOdyssey.cnmodsData.strCnmodsIndex
-                                tmp_cnmods_str = '《%s》\n%s%s\n链接：%s' % (
+                                url_index_mobile = OlivaDiceOdyssey.cnmodsData.strCnmodsIndexMobile
+                                tmp_cnmods_str = '《%s》\n%s%s\n链接：%s\n移动端：%s' % (
                                     tmp_get_res['title'],
                                     tmp_tag_str,
                                     html.unescape(re.sub('\\</{0,1}(.+?)\\>', '', tmp_get_res['opinion'])),
-                                    url_index + str(tmp_get_res['keyId'])
+                                    url_index + str(tmp_get_res['keyId']),
+                                    url_index_mobile + str(tmp_get_res['keyId'])
                                 )
                                 tmp_reply_str = tmp_cnmods_str
                             else:
