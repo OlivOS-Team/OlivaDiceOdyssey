@@ -15,6 +15,7 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 '''
 
 strCnmodsMain = 'http://cnmods.net/prod-api/index/moduleListPage.do'
+strCnmodsDetail = 'http://cnmods.net/prod-api/index/moduleDetail.do'
 
 strCnmodsIndex = 'http://cnmods.net/web/moduleDetail?keyId='
 strCnmodsIndexMobile = 'http://cnmods.net/mobile/moduleDetail?keyId='

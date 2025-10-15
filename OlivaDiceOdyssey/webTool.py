@@ -160,7 +160,7 @@ def support_gbk(zip_file: zipfile.ZipFile):
             name_to_info[real_name] = info
     return zip_file
 
-def getCnmodsReq(title = None, page = None):
+def getCnmodsReq(title = None, page = None, item_max = None, isRec = False, author = None):
     res = None
     tmp_res = None
     tmp_value = {}
@@ -169,7 +169,13 @@ def getCnmodsReq(title = None, page = None):
         tmp_value['title'] = str(title)
     if page != None:
         tmp_value['page'] = str(page)
-    if title != None or page != None:
+    if item_max != None:
+        tmp_value['size'] = str(item_max)
+    if isRec:
+        tmp_value['isRec'] = 'true'
+    if author != None:
+        tmp_value['article'] = str(author)
+    if title != None or page != None or item_max != None or isRec or author != None:
         send_url += '?' + urlencode(tmp_value)
     headers = {
         'User-Agent': OlivaDiceCore.data.bot_version_short_header
@@ -177,6 +183,28 @@ def getCnmodsReq(title = None, page = None):
     msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
     res_text = str(msg_res.text)
     try:
+        tmp_res = json.loads(res_text)
+        res = tmp_res
+    except:
+        pass
+    return res
+
+def getCnmodsDetailReq(keyId):
+    """
+    通过 keyId 获取模组详细信息
+    """
+    res = None
+    tmp_res = None
+    send_url = OlivaDiceOdyssey.cnmodsData.strCnmodsDetail
+    if keyId != None:
+        tmp_value = {'keyId': str(keyId)}
+        send_url += '?' + urlencode(tmp_value)
+    headers = {
+        'User-Agent': OlivaDiceCore.data.bot_version_short_header
+    }
+    try:
+        msg_res = req.request("GET", send_url, headers = headers, proxies = OlivaDiceCore.webTool.get_system_proxy())
+        res_text = str(msg_res.text)
         tmp_res = json.loads(res_text)
         res = tmp_res
     except:
