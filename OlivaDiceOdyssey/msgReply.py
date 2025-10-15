@@ -783,7 +783,7 @@ def replyCnmodsDetail(mod_data):
     tmp_download = ''
     tmp_download_url = mod_data.get('url', '')
     if tmp_download_url:
-        tmp_download = '下载地址: %s\n' % tmp_download_url
+        tmp_download = '模组下载地址: %s' % tmp_download_url
     # 组装最终字符串
     tmp_cnmods_str = '%s%s%s%s%s%s%s%s%s%s' % (
         tmp_header,      # [编号]《标题》
