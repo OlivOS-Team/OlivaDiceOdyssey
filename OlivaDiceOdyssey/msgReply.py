@@ -35,6 +35,7 @@ def data_init(plugin_event, Proc):
 def unity_reply(plugin_event, Proc):
     OlivaDiceCore.userConfig.setMsgCount()
     dictTValue = OlivaDiceCore.msgCustom.dictTValue.copy()
+    dictTValue['tUserName'] = plugin_event.data.sender['name']
     dictTValue['tName'] = plugin_event.data.sender['name']
     dictStrCustom = OlivaDiceCore.msgCustom.dictStrCustomDict[plugin_event.bot_info.hash]
     dictGValue = OlivaDiceCore.msgCustom.dictGValue
@@ -187,21 +188,15 @@ def unity_reply(plugin_event, Proc):
                 dictTValue = dictTValue,
                 replyMsg = replyMsg
             )
-        elif isMatchWordStart(tmp_reast_str, 'cnmods', isCommand = True) or isMatchWordStart(tmp_reast_str, 'mdmz', isCommand = True) or isMatchWordStart(tmp_reast_str, 'modu', isCommand = True):
-            if isMatchWordStart(tmp_reast_str, 'cnmods'):
-                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'cnmods')
-                tmp_reast_str = skipSpaceStart(tmp_reast_str)
-                tmp_reast_str = tmp_reast_str.rstrip(' ')
-            elif isMatchWordStart(tmp_reast_str, 'mdmz'):
-                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'mdmz')
-                tmp_reast_str = skipSpaceStart(tmp_reast_str)
-                tmp_reast_str = tmp_reast_str.rstrip(' ')
-            elif isMatchWordStart(tmp_reast_str, 'modu'):
-                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'modu')
-                tmp_reast_str = skipSpaceStart(tmp_reast_str)
-                tmp_reast_str = tmp_reast_str.rstrip(' ')
-            if isMatchWordStart(tmp_reast_str, 'search'):
-                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'search')
+        elif isMatchWordStart(tmp_reast_str, ['cnmods','mdmz','modu'], isCommand = True):
+            tmp_reast_str = getMatchWordStartRight(tmp_reast_str, ['cnmods','mdmz','modu'])
+            tmp_reast_str = skipSpaceStart(tmp_reast_str)
+            tmp_reast_str = tmp_reast_str.rstrip(' ')
+            if isMatchWordStart(tmp_reast_str, 'help'):
+                OlivaDiceCore.msgReply.replyMsgLazyHelpByEvent(plugin_event, 'cnmods')
+                return
+            elif isMatchWordStart(tmp_reast_str, 'search'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, ['search', 'find'])
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
                 tmp_reast_str = tmp_reast_str.rstrip(' ')
                 tmp_reast_str_list = tmp_reast_str.split(' ')
@@ -212,33 +207,18 @@ def unity_reply(plugin_event, Proc):
                     tmp_title = tmp_reast_str_list[0]
                 elif len(tmp_reast_str_list) >= 2:
                     tmp_title = tmp_reast_str_list[0]
-                    tmp_page = tmp_reast_str_list[-1]
-                if tmp_title == None:
+                    if tmp_reast_str_list[-1].isdigit():
+                        tmp_page = int(tmp_reast_str_list[-1])
+                        tmp_title = ' '.join(tmp_reast_str_list[:-1])
+                    else:
+                        tmp_title = tmp_reast_str
+                if tmp_title == None or tmp_title == '':
                     return
-                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = tmp_title, page = tmp_page)
+                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = tmp_title, page = tmp_page, item_max = 8, isRec = False, author = None)
                 if tmp_res != None:
                     try:
-                        tmp_res_list = []
-                        tmp_count = 0
-                        tmp_page_max = 1
-                        tmp_page_now = 1
-                        if len(tmp_res['data']['list']) > 0:
-                            for mod_this in tmp_res['data']['list']:
-                                tmp_count += 1
-                                tmp_res_list.append(
-                                    '[%s] %s' % (
-                                        str(tmp_count),
-                                        mod_this['title']
-                                    )
-                                )
-                            tmp_page_max = tmp_res['data']['totalPages']
-                            tmp_page_now = tmp_page
-                            dictTValue['tCnmodsResult'] = '%s\n---[第%s/%s页]---' % (
-                                '\n'.join(tmp_res_list),
-                                str(tmp_page_now),
-                                str(tmp_page_max)
-                            )
-                            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsSearch'], dictTValue)
+                        tmp_reply_str = replyCnmodsList(tmp_res, 'search', plugin_event, replyMsg, dictStrCustom, dictTValue)
+                        if tmp_reply_str:
                             OlivaDiceCore.userConfig.setUserConfigByKey(
                                 userConfigKey = 'cnmodsTemp',
                                 userConfigValue = tmp_res,
@@ -255,11 +235,102 @@ def unity_reply(plugin_event, Proc):
                                 )
                             )
                         else:
-                            tmp_reply_str = '未找到相关魔都模组搜索结果'
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsSearchNotFound']
                     except:
                         pass
                 if tmp_reply_str != None:
                     replyMsg(plugin_event, tmp_reply_str)
+            elif isMatchWordStart(tmp_reast_str, 'rec'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'rec')
+                tmp_reast_str = skipSpaceStart(tmp_reast_str)
+                tmp_reast_str = tmp_reast_str.rstrip(' ')
+                tmp_reast_str_list = tmp_reast_str.split(' ')
+                tmp_reply_str = None
+                tmp_title = None
+                tmp_page = 1
+                if len(tmp_reast_str_list) == 1:
+                    tmp_title = tmp_reast_str_list[0]
+                elif len(tmp_reast_str_list) >= 2:
+                    tmp_title = tmp_reast_str_list[0]
+                    if tmp_reast_str_list[-1].isdigit():
+                        tmp_page = int(tmp_reast_str_list[-1])
+                        tmp_title = ' '.join(tmp_reast_str_list[:-1])
+                    else:
+                        tmp_title = tmp_reast_str
+                if tmp_title == None or tmp_title == '':
+                    return
+                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = tmp_title, page = tmp_page, item_max = 8, isRec = True, author = None)
+                if tmp_res != None:
+                    try:
+                        tmp_reply_str = replyCnmodsList(tmp_res, 'rec', plugin_event, replyMsg, dictStrCustom, dictTValue)
+                        if tmp_reply_str:
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_res,
+                                botHash = plugin_event.bot_info.hash,
+                                userId = plugin_event.data.user_id,
+                                userType = 'user',
+                                platform = plugin_event.platform['platform']
+                            )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                        else:
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsRecNotFound']
+                    except:
+                        pass
+                        pass
+                if tmp_reply_str != None:
+                    replyMsg(plugin_event, tmp_reply_str)
+            elif isMatchWordStart(tmp_reast_str, 'author'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'author')
+                tmp_reast_str = skipSpaceStart(tmp_reast_str)
+                tmp_reast_str = tmp_reast_str.rstrip(' ')
+                tmp_reast_str_list = tmp_reast_str.split(' ')
+                tmp_reply_str = None
+                tmp_author = None
+                tmp_page = 1
+                if len(tmp_reast_str_list) == 1:
+                    tmp_author = tmp_reast_str_list[0]
+                elif len(tmp_reast_str_list) >= 2:
+                    tmp_author = tmp_reast_str_list[0]
+                    if tmp_reast_str_list[-1].isdigit():
+                        tmp_page = int(tmp_reast_str_list[-1])
+                        tmp_author = ' '.join(tmp_reast_str_list[:-1])
+                    else:
+                        tmp_author = tmp_reast_str
+                if tmp_author == None or tmp_author == '':
+                    return
+                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = None, page = tmp_page, item_max = 8, isRec = False, author = tmp_author)
+                if tmp_res != None:
+                    try:
+                        tmp_reply_str = replyCnmodsList(tmp_res, 'author', plugin_event, replyMsg, dictStrCustom, dictTValue)
+                        if tmp_reply_str:
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_res,
+                                botHash = plugin_event.bot_info.hash,
+                                userId = plugin_event.data.user_id,
+                                userType = 'user',
+                                platform = plugin_event.platform['platform']
+                            )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                        else:
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsAuthorNotFound']
+                    except:
+                        pass
+                if tmp_reply_str != None:
+                    replyMsg(plugin_event, tmp_reply_str)      
             elif isMatchWordStart(tmp_reast_str, 'luck'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'luck')
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
@@ -268,30 +339,11 @@ def unity_reply(plugin_event, Proc):
                 tmp_page = 1
                 if tmp_reast_str.isdigit():
                     tmp_page = int(tmp_reast_str)
-                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = None, page = tmp_page)
+                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = None, page = tmp_page, item_max = 8, isRec = True, author = None)
                 if tmp_res != None:
                     try:
-                        tmp_res_list = []
-                        tmp_count = 0
-                        tmp_page_max = 1
-                        tmp_page_now = 1
-                        if len(tmp_res['data']['list']) > 0:
-                            for mod_this in tmp_res['data']['list']:
-                                tmp_count += 1
-                                tmp_res_list.append(
-                                    '[%s] %s' % (
-                                        str(tmp_count),
-                                        mod_this['title']
-                                    )
-                                )
-                            tmp_page_max = tmp_res['data']['totalPages']
-                            tmp_page_now = tmp_page
-                            dictTValue['tCnmodsResult'] = '%s\n---[第%s/%s页]---' % (
-                                '\n'.join(tmp_res_list),
-                                str(tmp_page_now),
-                                str(tmp_page_max)
-                            )
-                            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsLuck'], dictTValue)
+                        tmp_reply_str = replyCnmodsList(tmp_res, 'luck', plugin_event, replyMsg, dictStrCustom, dictTValue)
+                        if tmp_reply_str:
                             OlivaDiceCore.userConfig.setUserConfigByKey(
                                 userConfigKey = 'cnmodsTemp',
                                 userConfigValue = tmp_res,
@@ -308,64 +360,62 @@ def unity_reply(plugin_event, Proc):
                                 )
                             )
                         else:
-                            tmp_reply_str = '未找到魔都模组推荐结果'
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsLuckNotFound']
                     except:
                         pass
                 if tmp_reply_str != None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'roll'):
                 tmp_reply_str = None
-                tmp_page_count = None
-                tmp_page = 1
-                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = None, page = 1)
+                tmp_total_elements = 0
+                # 获取总数
+                tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = None, page = 1, item_max = 1)
                 if tmp_res != None:
                     try:
-                        tmp_page_count = tmp_res['data']['totalPages']
+                        tmp_total_elements = tmp_res['data'].get('totalElements', 1)
                     except:
                         pass
-                if tmp_page_count != None:
-                    tmp_rd = OlivaDiceCore.onedice.RD(
-                        '1D%s' % str(tmp_page_count)
-                    )
+                if tmp_total_elements > 0:
+                    # 直接随机一个keyId
+                    tmp_rd = OlivaDiceCore.onedice.RD('1D%s' % str(tmp_total_elements))
                     tmp_rd.roll()
                     if tmp_rd.resError == None:
-                        tmp_page = tmp_rd.resInt
-                        tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = None, page = tmp_page)
-                        if tmp_res != None:
+                        tmp_keyId = tmp_rd.resInt
+                        # 通过keyId获取详情
+                        tmp_detail_res = OlivaDiceOdyssey.webTool.getCnmodsDetailReq(tmp_keyId)
+                        if tmp_detail_res != None:
                             try:
-                                tmp_rd_1 = OlivaDiceCore.onedice.RD(
-                                    '1D%s' % str(len(tmp_res['data']['list']))
-                                )
-                                tmp_rd_1.roll()
-                                if tmp_rd_1.resError == None:
-                                    if tmp_rd_1.resInt > 0:
-                                        tmp_get_res = tmp_res['data']['list'][tmp_rd_1.resInt - 1]
-                                        tmp_tag_list = []
-                                        tmp_tag_str = ''
-                                        for key_this in [
-                                            'moduleType',
-                                            'moduleVersion',
-                                            'moduleAge',
-                                            'occurrencePlace',
-                                            'structure'
-                                        ]:
-                                            if key_this in tmp_get_res:
-                                                if tmp_get_res[key_this] != '':
-                                                    tmp_tag_list.append(tmp_get_res[key_this])
-                                        if len(tmp_tag_list) > 0:
-                                            tmp_tag_str = '%s\n' % ' - '.join(tmp_tag_list)
-                                        url_index = OlivaDiceOdyssey.cnmodsData.strCnmodsIndex
-                                        url_index_mobile = OlivaDiceOdyssey.cnmodsData.strCnmodsIndexMobile
-                                        tmp_cnmods_str = '《%s》\n%s%s\n链接：%s\n移动端：%s' % (
-                                            tmp_get_res['title'],
-                                            tmp_tag_str,
-                                            html.unescape(re.sub('\\</{0,1}(.+?)\\>', '', tmp_get_res['opinion'])),
-                                            url_index + str(tmp_get_res['keyId']),
-                                            url_index_mobile + str(tmp_get_res['keyId'])
-                                        )
-                                        tmp_reply_str = tmp_cnmods_str
+                                if 'data' in tmp_detail_res and tmp_detail_res['data'] != None and 'module' in tmp_detail_res['data']:
+                                    tmp_reply_str = replyCnmodsDetail(tmp_detail_res['data']['module'])
+                                    replyMsg(plugin_event, tmp_reply_str)
+                                    return
                             except:
                                 pass
+                if tmp_reply_str != None:
+                    replyMsg(plugin_event, tmp_reply_str)
+            elif isMatchWordStart(tmp_reast_str, 'find'):
+                tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'find')
+                tmp_reast_str = skipSpaceStart(tmp_reast_str)
+                tmp_reast_str = tmp_reast_str.rstrip(' ')
+                tmp_reply_str = None
+                # find命令只接受纯数字keyId
+                if tmp_reast_str.isdigit():
+                    tmp_keyId = int(tmp_reast_str)
+                    # 通过keyId获取详情
+                    tmp_detail_res = OlivaDiceOdyssey.webTool.getCnmodsDetailReq(tmp_keyId)
+                    if tmp_detail_res != None:
+                        try:
+                            if 'data' in tmp_detail_res and tmp_detail_res['data'] != None and 'module' in tmp_detail_res['data']:
+                                tmp_reply_str = replyCnmodsDetail(tmp_detail_res['data']['module'])
+                            else:
+                                dictTValue['tKeyId'] = str(tmp_keyId)
+                                tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindNotFound'].format(**dictTValue)
+                        except:
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindError']
+                    else:
+                        tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindErrorRetry']
+                else:
+                    tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindOnlyNumber']
                 if tmp_reply_str != None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'get'):
@@ -373,8 +423,7 @@ def unity_reply(plugin_event, Proc):
                 tmp_reast_str = skipSpaceStart(tmp_reast_str)
                 tmp_reast_str = tmp_reast_str.rstrip(' ')
                 tmp_reply_str = None
-                tmp_count_get = 1
-                tmp_not_hit = '未找到所取魔都模组条目\n或许你应当先试试查找模组'
+                # 获取缓存
                 tmp_res = OlivaDiceCore.userConfig.getUserConfigByKey(
                     userId = plugin_event.data.user_id,
                     userType = 'user',
@@ -382,43 +431,103 @@ def unity_reply(plugin_event, Proc):
                     userConfigKey = 'cnmodsTemp',
                     botHash = plugin_event.bot_info.hash
                 )
-                if tmp_reast_str.isdigit():
+                # 情况1: 无参数 - 显示缓存
+                if tmp_reast_str == '':
+                    if tmp_res != None and 'data' in tmp_res and 'list' in tmp_res['data'] and len(tmp_res['data']['list']) > 0:
+                        tmp_reply_str = replyCnmodsList(tmp_res, 'get', plugin_event, replyMsg, dictStrCustom, dictTValue)
+                    else:
+                        tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetCacheNotFound']
+                # 情况2: 数字参数 - 从缓存获取指定序号
+                elif tmp_reast_str.isdigit():
                     tmp_count_get = int(tmp_reast_str)
-                if tmp_count_get != None:
-                    try:
-                        if tmp_res != None:
-                            if tmp_count_get >= 1 and tmp_count_get <= len(tmp_res['data']['list']):
-                                tmp_get_res = tmp_res['data']['list'][tmp_count_get - 1]
-                                tmp_tag_list = []
-                                tmp_tag_str = ''
-                                for key_this in [
-                                    'moduleType',
-                                    'moduleVersion',
-                                    'moduleAge',
-                                    'occurrencePlace',
-                                    'structure'
-                                ]:
-                                    if key_this in tmp_get_res:
-                                        if tmp_get_res[key_this] != '':
-                                            tmp_tag_list.append(tmp_get_res[key_this])
-                                if len(tmp_tag_list) > 0:
-                                    tmp_tag_str = '%s\n' % ' - '.join(tmp_tag_list)
-                                url_index = OlivaDiceOdyssey.cnmodsData.strCnmodsIndex
-                                url_index_mobile = OlivaDiceOdyssey.cnmodsData.strCnmodsIndexMobile
-                                tmp_cnmods_str = '《%s》\n%s%s\n链接：%s\n移动端：%s' % (
-                                    tmp_get_res['title'],
-                                    tmp_tag_str,
-                                    html.unescape(re.sub('\\</{0,1}(.+?)\\>', '', tmp_get_res['opinion'])),
-                                    url_index + str(tmp_get_res['keyId']),
-                                    url_index_mobile + str(tmp_get_res['keyId'])
-                                )
-                                tmp_reply_str = tmp_cnmods_str
-                            else:
-                                tmp_reply_str = tmp_not_hit
+                    if tmp_res != None and 'data' in tmp_res and 'list' in tmp_res['data']:
+                        if tmp_count_get >= 1 and tmp_count_get <= len(tmp_res['data']['list']):
+                            tmp_get_res = tmp_res['data']['list'][tmp_count_get - 1]
+                            tmp_reply_str = replyCnmodsDetail(tmp_get_res)
+                            replyMsg(plugin_event, tmp_reply_str)
+                            return
                         else:
-                            tmp_reply_str = tmp_not_hit
-                    except:
-                        pass
+                            dictTValue['tRange'] = str(len(tmp_res['data']['list']))
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetRangeError'].format(**dictTValue)
+                    else:
+                        tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetCacheNotFound']
+                # 情况3: 名称参数 - 搜索模组
+                else:
+                    tmp_search_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title = tmp_reast_str, page = 1, item_max = 8, isRec = False, author = None)
+                    if tmp_search_res != None and 'data' in tmp_search_res and 'list' in tmp_search_res['data']:
+                        tmp_list = tmp_search_res['data']['list']
+                        # 检查是否有完全匹配的结果
+                        tmp_exact_match = None
+                        for mod_this in tmp_list:
+                            if mod_this.get('title', '') == tmp_reast_str:
+                                tmp_exact_match = mod_this
+                                break
+                        # 如果有完全匹配,直接显示
+                        if tmp_exact_match:
+                            tmp_reply_str = replyCnmodsDetail(tmp_exact_match)
+                            replyMsg(plugin_event, tmp_reply_str)
+                            # 保存搜索结果到缓存
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_search_res,
+                                botHash = plugin_event.bot_info.hash,
+                                userId = plugin_event.data.user_id,
+                                userType = 'user',
+                                platform = plugin_event.platform['platform']
+                            )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                            return
+                        # 如果只有一个结果,直接显示
+                        elif len(tmp_list) == 1:
+                            tmp_reply_str = replyCnmodsDetail(tmp_list[0])
+                            replyMsg(plugin_event, tmp_reply_str)
+                            # 保存搜索结果到缓存
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_search_res,
+                                botHash = plugin_event.bot_info.hash,
+                                userId = plugin_event.data.user_id,
+                                userType = 'user',
+                                platform = plugin_event.platform['platform']
+                            )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                            return
+                        # 如果有多个结果,显示列表
+                        elif len(tmp_list) > 1:
+                            tmp_reply_str = replyCnmodsList(tmp_search_res, 'get_search', plugin_event, replyMsg, dictStrCustom, dictTValue)
+                            # 保存搜索结果到缓存
+                            OlivaDiceCore.userConfig.setUserConfigByKey(
+                                userConfigKey = 'cnmodsTemp',
+                                userConfigValue = tmp_search_res,
+                                botHash = plugin_event.bot_info.hash,
+                                userId = plugin_event.data.user_id,
+                                userType = 'user',
+                                platform = plugin_event.platform['platform']
+                            )
+                            OlivaDiceCore.userConfig.writeUserConfigByUserHash(
+                                userHash = OlivaDiceCore.userConfig.getUserHash(
+                                    userId = plugin_event.data.user_id,
+                                    userType = 'user',
+                                    platform = plugin_event.platform['platform']
+                                )
+                            )
+                        else:
+                            tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetSearchNotFound']
+                    else:
+                        tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetSearchError']
+                
                 if tmp_reply_str != None:
                     replyMsg(plugin_event, tmp_reply_str)
             else:
@@ -564,3 +673,128 @@ def replyRULES_command_getResult(
         )
         tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesShow'], dictTValue)
         replyMsg(plugin_event, tmp_reply_str)
+
+def replyCnmodsList(mod_list_data, list_type, plugin_event, replyMsg, dictStrCustom, dictTValue):
+    """
+    统一处理cnmods列表显示
+    """
+    tmp_reply_str = None
+    if mod_list_data != None and 'data' in mod_list_data and 'list' in mod_list_data['data'] and len(mod_list_data['data']['list']) > 0:
+        tmp_res_list = []
+        tmp_count = 0
+        for mod_this in mod_list_data['data']['list']:
+            tmp_count += 1
+            tmp_res_list.append(
+                '%d. [%s]%s' % (
+                    tmp_count,
+                    str(mod_this.get('keyId', 'N/A')),
+                    mod_this.get('title', 'N/A')
+                )
+            )
+        tmp_page_max = mod_list_data['data'].get('totalPages', 1)
+        tmp_total_elements = mod_list_data['data'].get('totalElements', 0)
+        tmp_page_now = mod_list_data['data'].get('page', 1)
+        # 根据类型设置不同的页码标记
+        if list_type == 'search':
+            page_marker = '---[第%s/%s页 共%s项]---'
+            dictTValue['tCnmodsResult'] = '%s\n%s' % (
+                '\n'.join(tmp_res_list),
+                page_marker % (str(tmp_page_now), str(tmp_page_max), str(tmp_total_elements))
+            )
+            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsSearch'], dictTValue)
+        elif list_type == 'rec':
+            page_marker = '---[第%s/%s页 共%s项 编辑推荐]---'
+            dictTValue['tCnmodsResult'] = '%s\n%s' % (
+                '\n'.join(tmp_res_list),
+                page_marker % (str(tmp_page_now), str(tmp_page_max), str(tmp_total_elements))
+            )
+            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsRec'], dictTValue)
+        elif list_type == 'author':
+            page_marker = '---[第%s/%s页 共%s项 作者搜索]---'
+            dictTValue['tCnmodsResult'] = '%s\n%s' % (
+                '\n'.join(tmp_res_list),
+                page_marker % (str(tmp_page_now), str(tmp_page_max), str(tmp_total_elements))
+            )
+            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsAuthor'], dictTValue)
+        elif list_type == 'get':
+            page_marker = '---[共%s项]---'
+            dictTValue['tCnmodsResult'] = '%s\n%s' % (
+                '\n'.join(tmp_res_list),
+                page_marker % str(min(tmp_total_elements, 10))
+            )
+            tmp_reply_str = dictTValue['tCnmodsResult']
+        elif list_type == 'get_search':
+            page_marker = '---[第%s/%s页 共%s项]---'
+            dictTValue['tCount'] = str(len(mod_list_data['data']['list']))
+            dictTValue['tCnmodsResult'] = '%s\n%s' % (
+                '\n'.join(tmp_res_list),
+                page_marker % (str(tmp_page_now), str(tmp_page_max), str(tmp_total_elements))
+            )
+            tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetMultiMatch'].format(**dictTValue)
+        elif list_type == 'luck':
+            page_marker = '---[第%s/%s页 共%s项 编辑推荐]---'
+            dictTValue['tCnmodsResult'] = '%s\n%s' % (
+                '\n'.join(tmp_res_list),
+                page_marker % (str(tmp_page_now), str(tmp_page_max), str(tmp_total_elements))
+            )
+            tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyCnmodsLuck'], dictTValue)
+    return tmp_reply_str
+
+def replyCnmodsDetail(mod_data):
+    """生成单个模组的详细信息字符串"""
+    # 基础信息 
+    tmp_header = '[%s]《%s》\n' % (str(mod_data.get('keyId', 'N/A')), mod_data.get('title', 'N/A'))
+    # 标签信息
+    tmp_tag_list = []
+    for key_this in ['moduleType', 'moduleVersion', 'moduleAge', 'occurrencePlace', 'structure']:
+        if key_this in mod_data and mod_data[key_this] != '':
+            tmp_tag_list.append(mod_data[key_this])
+    tmp_tags = ''
+    if len(tmp_tag_list) > 0:
+        tmp_tags = '%s\n' % ' - '.join(tmp_tag_list)
+    # 作者信息
+    tmp_author = '作者: %s\n' % mod_data.get('article', '')
+    if not tmp_author:
+        tmp_author = ''
+    # 规模信息
+    tmp_min_amount = mod_data.get('minAmount', 0)
+    tmp_max_amount = mod_data.get('maxAmount', 0)
+    tmp_min_duration = mod_data.get('minDuration', 0)
+    tmp_max_duration = mod_data.get('maxDuration', 0)
+    tmp_scale = ''
+    if tmp_min_amount > 0 or tmp_max_amount > 0:
+        tmp_scale = '规模: %d-%d人, %d-%d时\n' % (tmp_min_amount, tmp_max_amount, tmp_min_duration, tmp_max_duration)
+    # 原创信息
+    tmp_original = '原创: %s\n' % ('是' if mod_data.get('original', False) else '否')
+    # 发布日期
+    tmp_date = ''
+    tmp_release_date = mod_data.get('releaseDate', '')
+    if tmp_release_date:
+        tmp_date = '发布日期: %s\n' % tmp_release_date
+    # 简介
+    tmp_intro = '简介: %s\n' % html.unescape(re.sub('\\</{0,1}(.+?)\\>', '', mod_data.get('opinion', '')))
+    # 链接信息
+    url_index = OlivaDiceOdyssey.cnmodsData.strCnmodsIndex
+    url_index_mobile = OlivaDiceOdyssey.cnmodsData.strCnmodsIndexMobile
+    tmp_key_id = str(mod_data.get('keyId', 'N/A'))
+    tmp_pc_link = 'PC端链接: %s\n' % (url_index + tmp_key_id)
+    tmp_mobile_link = '移动端链接: %s\n' % (url_index_mobile + tmp_key_id)
+    # 下载地址
+    tmp_download = ''
+    tmp_download_url = mod_data.get('url', '')
+    if tmp_download_url:
+        tmp_download = '模组下载地址: %s' % tmp_download_url
+    # 组装最终字符串
+    tmp_cnmods_str = '%s%s%s%s%s%s%s%s%s%s' % (
+        tmp_header,      # [编号]《标题》
+        tmp_tags,        # 标签
+        tmp_author,      # 作者: xxx
+        tmp_scale,       # 规模: xxx
+        tmp_original,    # 原创: xxx
+        tmp_date,        # 发布日期: xxx
+        tmp_intro,       # 简介: xxx
+        tmp_pc_link,     # PC端链接: xxx
+        tmp_mobile_link, # 移动端链接: xxx
+        tmp_download,    # 下载地址: xxx
+    )
+    return tmp_cnmods_str
