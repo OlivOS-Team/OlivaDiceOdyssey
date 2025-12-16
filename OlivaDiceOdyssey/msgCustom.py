@@ -83,12 +83,7 @@ dictHelpDocTemp = {
 OlivaDice高阶模块
 本模块为青果跑团掷骰机器人(OlivaDice)高阶模块，集成与跑团相关但不是必须的或是版权受限的功能。
 核心开发者: lunzhiPenxil仑质
-[.help OlivaDiceOdyssey更新] 查看本模块更新日志
 注: 本模块为可选模块。''',
-
-    'OlivaDiceOdyssey更新': '''[OlivaDiceOdyssey]
-3.0.2: 支持新版OlivOS
-3.0.0: 初始化项目''',
 
     '魔都模组': '&cnmods',
 }
