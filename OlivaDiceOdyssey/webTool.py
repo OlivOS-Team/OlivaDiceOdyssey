@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-"""
+r"""
 _______________________    _________________________________________
 __  __ \__  /____  _/_ |  / /__    |__  __ \___  _/_  ____/__  ____/
 _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
@@ -10,7 +10,7 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 @Author    :   lunzhiPenxil仑质
 @Contact   :   lunzhipenxil@gmail.com
 @License   :   AGPL
-@Copyright :   (C) 2020-2022, OlivOS-Team
+@Copyright :   (C) 2020-2026, OlivOS-Team
 @Desc      :   None
 """
 
@@ -57,7 +57,7 @@ def GETHttpFile(url, path):
             res = True
         else:
             res = False
-    except:
+    except Exception:
         res = False
     return res
 
@@ -74,13 +74,12 @@ def getExtiverseDeckRemote():
         tmp_res = json.loads(res_text)
         res = tmp_res
         gExtiverseDeck = res
-    except:
+    except Exception:
         pass
     return res
 
 
 def downloadExtiverseDeckRemote(name, botHash='unity'):
-    global gExtiverseDeck
     res = False
     flag_hit = False
     res_text = None
@@ -110,7 +109,7 @@ def downloadExtiverseDeckRemote(name, botHash='unity'):
                             )
                             res_text = str(msg_res.text)
                             flag_hit = True
-                        except:
+                        except Exception:
                             pass
                         if flag_hit:
                             res = True
@@ -142,7 +141,7 @@ def downloadExtiverseDeckRemote(name, botHash='unity'):
                         for resourceFile_list_this in resourceFile_list:
                             try:
                                 resourceFile.extract(resourceFile_list_this, 'data')
-                            except:
+                            except Exception:
                                 pass
     return res
 
@@ -153,7 +152,7 @@ def support_gbk(zip_file: zipfile.ZipFile):
     for name, info in name_to_info.copy().items():
         try:
             real_name = name.encode('cp437').decode('gbk')
-        except:
+        except Exception:
             real_name = name
         if real_name != name:
             info.filename = real_name
@@ -167,17 +166,17 @@ def getCnmodsReq(title=None, page=None, item_max=None, isRec=False, author=None)
     tmp_res = None
     tmp_value = {}
     send_url = OlivaDiceOdyssey.cnmodsData.strCnmodsMain
-    if title != None:
+    if title is not None:
         tmp_value['title'] = str(title)
-    if page != None:
+    if page is not None:
         tmp_value['page'] = str(page)
-    if item_max != None:
+    if item_max is not None:
         tmp_value['size'] = str(item_max)
     if isRec:
         tmp_value['isRec'] = 'true'
-    if author != None:
+    if author is not None:
         tmp_value['article'] = str(author)
-    if title != None or page != None or item_max != None or isRec or author != None:
+    if title is not None or page is not None or item_max is not None or isRec or author is not None:
         send_url += '?' + urlencode(tmp_value)
     headers = {'User-Agent': OlivaDiceCore.data.bot_version_short_header}
     msg_res = req.request('GET', send_url, headers=headers, proxies=OlivaDiceCore.webTool.get_system_proxy())
@@ -185,7 +184,7 @@ def getCnmodsReq(title=None, page=None, item_max=None, isRec=False, author=None)
     try:
         tmp_res = json.loads(res_text)
         res = tmp_res
-    except:
+    except Exception:
         pass
     return res
 
@@ -197,7 +196,7 @@ def getCnmodsDetailReq(keyId):
     res = None
     tmp_res = None
     send_url = OlivaDiceOdyssey.cnmodsData.strCnmodsDetail
-    if keyId != None:
+    if keyId is not None:
         tmp_value = {'keyId': str(keyId)}
         send_url += '?' + urlencode(tmp_value)
     headers = {'User-Agent': OlivaDiceCore.data.bot_version_short_header}
@@ -206,7 +205,7 @@ def getCnmodsDetailReq(keyId):
         res_text = str(msg_res.text)
         tmp_res = json.loads(res_text)
         res = tmp_res
-    except:
+    except Exception:
         pass
     return res
 
@@ -216,13 +215,13 @@ def getRulesReq(key: 'str|None' = None, page=None, item_max=None):
     tmp_res = None
     tmp_value = {}
     send_url = OlivaDiceOdyssey.cnmodsData.strRulesMain
-    if key != None:
+    if key is not None:
         tmp_value['key'] = str('%'.join(key))
-    if page != None:
+    if page is not None:
         tmp_value['page'] = str(page)
-    if item_max != None:
+    if item_max is not None:
         tmp_value['item_max'] = str(item_max)
-    if key != None:
+    if key is not None:
         send_url += '?' + urlencode(tmp_value)
     headers = {'User-Agent': OlivaDiceCore.data.bot_version_short_header}
     try:
@@ -230,7 +229,7 @@ def getRulesReq(key: 'str|None' = None, page=None, item_max=None):
         res_text = str(msg_res.text)
         tmp_res = json.loads(res_text)
         res = tmp_res
-    except:
+    except Exception:
         pass
     return res
 
@@ -245,7 +244,7 @@ def sendKOOKBotMarketPulse(token: str):
     try:
         tmp_res = json.loads(res_text)
         res = tmp_res
-    except:
+    except Exception:
         pass
     return res
 
@@ -315,7 +314,7 @@ def sendKOOKManageThread(botDict: dict):
             int_strOdysseyKOOKPlayGameID = 1521178
             try:
                 int_strOdysseyKOOKPlayGameID = int(str_strOdysseyKOOKPlayGameID)
-            except:
+            except Exception:
                 pass
             dictPlayGameReg.setdefault(
                 botHash, {'data_type': -1, 'id': -1, 'music_name': None, 'singer': None, 'software': None}
@@ -376,7 +375,7 @@ def sendKOOKManageThread(botDict: dict):
                     try:
                         if fake_plugin_event.indeAPI.hasAPI('set_playgame_delete_activity_all'):
                             fake_plugin_event.indeAPI.set_playgame_delete_activity_all()
-                    except:
+                    except Exception:
                         pass
                 elif 1 == flag_odysseyKOOKPlayGameMode:
                     fake_plugin_event = OlivOS.API.Event(
@@ -389,7 +388,7 @@ def sendKOOKManageThread(botDict: dict):
                     try:
                         if fake_plugin_event.indeAPI.hasAPI('set_playgame_activity_game'):
                             fake_plugin_event.indeAPI.set_playgame_activity_game(1521178)
-                    except:
+                    except Exception:
                         pass
                 elif 2 == flag_odysseyKOOKPlayGameMode:
                     fake_plugin_event = OlivOS.API.Event(
@@ -406,7 +405,7 @@ def sendKOOKManageThread(botDict: dict):
                                 str_strOdysseyKOOKPlayGameMusicSinger,
                                 str_strOdysseyKOOKPlayGameMusicSoftware,
                             )
-                    except:
+                    except Exception:
                         pass
                 elif 3 == flag_odysseyKOOKPlayGameMode:
                     fake_plugin_event = OlivOS.API.Event(
@@ -419,7 +418,7 @@ def sendKOOKManageThread(botDict: dict):
                     try:
                         if fake_plugin_event.indeAPI.hasAPI('set_playgame_activity_game'):
                             fake_plugin_event.indeAPI.set_playgame_activity_game(int_strOdysseyKOOKPlayGameID)
-                    except:
+                    except Exception:
                         pass
         time.sleep(checkF)
 

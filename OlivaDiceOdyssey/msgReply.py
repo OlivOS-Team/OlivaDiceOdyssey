@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-"""
+r"""
 _______________________    _________________________________________
 __  __ \__  /____  _/_ |  / /__    |__  __ \___  _/_  ____/__  ____/
 _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
@@ -10,7 +10,7 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 @Author    :   lunzhiPenxil仑质
 @Contact   :   lunzhipenxil@gmail.com
 @License   :   AGPL
-@Copyright :   (C) 2020-2021, OlivOS-Team
+@Copyright :   (C) 2020-2026, OlivOS-Team
 @Desc      :   None
 """
 
@@ -52,17 +52,17 @@ def unity_reply(plugin_event, Proc):
     skipToRight = OlivaDiceCore.msgReply.skipToRight
     msgIsCommand = OlivaDiceCore.msgReply.msgIsCommand
 
-    tmp_at_str = OlivOS.messageAPI.PARA.at(plugin_event.base_info['self_id']).CQ()
+    tmp_at_str = OlivOS.messageAPI.PARA.at(plugin_event.base_info['self_id']).CQ()  # NOQA: F841
     tmp_id_str = str(plugin_event.base_info['self_id'])
     tmp_at_str_sub = None
     tmp_id_str_sub = None
     if 'sub_self_id' in plugin_event.data.extend:
-        if plugin_event.data.extend['sub_self_id'] != None:
-            tmp_at_str_sub = OlivOS.messageAPI.PARA.at(plugin_event.data.extend['sub_self_id']).CQ()
+        if plugin_event.data.extend['sub_self_id'] is not None:
+            tmp_at_str_sub = OlivOS.messageAPI.PARA.at(plugin_event.data.extend['sub_self_id']).CQ()  # NOQA: F841
             tmp_id_str_sub = str(plugin_event.data.extend['sub_self_id'])
-    tmp_command_str_1 = '.'
-    tmp_command_str_2 = '。'
-    tmp_command_str_3 = '/'
+    tmp_command_str_1 = '.'  # NOQA: F841
+    tmp_command_str_2 = '。'  # NOQA: F841
+    tmp_command_str_3 = '/'  # NOQA: F841
     tmp_reast_str = plugin_event.data.message
     flag_force_reply = False
     flag_is_command = False
@@ -71,7 +71,7 @@ def unity_reply(plugin_event, Proc):
     flag_is_from_group_admin = False
     flag_is_from_group_sub_admin = False
     flag_is_from_group_have_admin = False
-    flag_is_from_master = False
+    flag_is_from_master = False  # NOQA: F841
     if isMatchWordStart(tmp_reast_str, '[CQ:reply,id='):
         tmp_reast_str = skipToRight(tmp_reast_str, ']')
         tmp_reast_str = tmp_reast_str[1:]
@@ -105,19 +105,19 @@ def unity_reply(plugin_event, Proc):
     if flag_is_command:
         tmp_hagID = None
         if plugin_event.plugin_info['func_type'] == 'group_message':
-            if plugin_event.data.host_id != None:
+            if plugin_event.data.host_id is not None:
                 flag_is_from_host = True
             flag_is_from_group = True
         elif plugin_event.plugin_info['func_type'] == 'private_message':
             flag_is_from_group = False
         if flag_is_from_group:
             if 'role' in plugin_event.data.sender:
-                flag_is_from_group_have_admin = True
+                flag_is_from_group_have_admin = True  # NOQA: F841
                 if plugin_event.data.sender['role'] in ['owner', 'admin']:
                     flag_is_from_group_admin = True
                 elif plugin_event.data.sender['role'] in ['sub_admin']:
-                    flag_is_from_group_admin = True
-                    flag_is_from_group_sub_admin = True
+                    flag_is_from_group_admin = True  # NOQA: F841
+                    flag_is_from_group_sub_admin = True  # NOQA: F841
         if flag_is_from_host and flag_is_from_group:
             tmp_hagID = '%s|%s' % (str(plugin_event.data.host_id), str(plugin_event.data.group_id))
         elif flag_is_from_group:
@@ -211,12 +211,12 @@ def unity_reply(plugin_event, Proc):
                         tmp_title = ' '.join(tmp_reast_str_list[:-1])
                     else:
                         tmp_title = tmp_reast_str
-                if tmp_title == None or tmp_title == '':
+                if tmp_title is None or tmp_title == '':
                     return
                 tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(
                     title=tmp_title, page=tmp_page, item_max=8, isRec=False, author=None
                 )
-                if tmp_res != None:
+                if tmp_res is not None:
                     try:
                         tmp_reply_str = replyCnmodsList(
                             tmp_res, 'search', plugin_event, replyMsg, dictStrCustom, dictTValue
@@ -239,9 +239,9 @@ def unity_reply(plugin_event, Proc):
                             )
                         else:
                             tmp_reply_str = dictStrCustom['strOdysseyCnmodsSearchNotFound']
-                    except:
+                    except Exception:
                         pass
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'rec'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'rec')
@@ -260,12 +260,12 @@ def unity_reply(plugin_event, Proc):
                         tmp_title = ' '.join(tmp_reast_str_list[:-1])
                     else:
                         tmp_title = tmp_reast_str
-                if tmp_title == None or tmp_title == '':
+                if tmp_title is None or tmp_title == '':
                     return
                 tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(
                     title=tmp_title, page=tmp_page, item_max=8, isRec=True, author=None
                 )
-                if tmp_res != None:
+                if tmp_res is not None:
                     try:
                         tmp_reply_str = replyCnmodsList(
                             tmp_res, 'rec', plugin_event, replyMsg, dictStrCustom, dictTValue
@@ -288,10 +288,10 @@ def unity_reply(plugin_event, Proc):
                             )
                         else:
                             tmp_reply_str = dictStrCustom['strOdysseyCnmodsRecNotFound']
-                    except:
+                    except Exception:
                         pass
                         pass
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'author'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'author')
@@ -310,12 +310,12 @@ def unity_reply(plugin_event, Proc):
                         tmp_author = ' '.join(tmp_reast_str_list[:-1])
                     else:
                         tmp_author = tmp_reast_str
-                if tmp_author == None or tmp_author == '':
+                if tmp_author is None or tmp_author == '':
                     return
                 tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(
                     title=None, page=tmp_page, item_max=8, isRec=False, author=tmp_author
                 )
-                if tmp_res != None:
+                if tmp_res is not None:
                     try:
                         tmp_reply_str = replyCnmodsList(
                             tmp_res, 'author', plugin_event, replyMsg, dictStrCustom, dictTValue
@@ -338,9 +338,9 @@ def unity_reply(plugin_event, Proc):
                             )
                         else:
                             tmp_reply_str = dictStrCustom['strOdysseyCnmodsAuthorNotFound']
-                    except:
+                    except Exception:
                         pass
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'luck'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'luck')
@@ -353,7 +353,7 @@ def unity_reply(plugin_event, Proc):
                 tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(
                     title=None, page=tmp_page, item_max=8, isRec=True, author=None
                 )
-                if tmp_res != None:
+                if tmp_res is not None:
                     try:
                         tmp_reply_str = replyCnmodsList(
                             tmp_res, 'luck', plugin_event, replyMsg, dictStrCustom, dictTValue
@@ -376,41 +376,41 @@ def unity_reply(plugin_event, Proc):
                             )
                         else:
                             tmp_reply_str = dictStrCustom['strOdysseyCnmodsLuckNotFound']
-                    except:
+                    except Exception:
                         pass
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'roll'):
                 tmp_reply_str = None
                 tmp_total_elements = 0
                 # 获取总数
                 tmp_res = OlivaDiceOdyssey.webTool.getCnmodsReq(title=None, page=1, item_max=1)
-                if tmp_res != None:
+                if tmp_res is not None:
                     try:
                         tmp_total_elements = tmp_res['data'].get('totalElements', 1)
-                    except:
+                    except Exception:
                         pass
                 if tmp_total_elements > 0:
                     # 直接随机一个keyId
                     tmp_rd = OlivaDiceCore.onedice.RD('1D%s' % str(tmp_total_elements))
                     tmp_rd.roll()
-                    if tmp_rd.resError == None:
+                    if tmp_rd.resError is None:
                         tmp_keyId = tmp_rd.resInt
                         # 通过keyId获取详情
                         tmp_detail_res = OlivaDiceOdyssey.webTool.getCnmodsDetailReq(tmp_keyId)
-                        if tmp_detail_res != None:
+                        if tmp_detail_res is not None:
                             try:
                                 if (
                                     'data' in tmp_detail_res
-                                    and tmp_detail_res['data'] != None
+                                    and tmp_detail_res['data'] is not None
                                     and 'module' in tmp_detail_res['data']
                                 ):
                                     tmp_reply_str = replyCnmodsDetail(tmp_detail_res['data']['module'])
                                     replyMsg(plugin_event, tmp_reply_str)
                                     return
-                            except:
+                            except Exception:
                                 pass
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'find'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'find')
@@ -422,24 +422,24 @@ def unity_reply(plugin_event, Proc):
                     tmp_keyId = int(tmp_reast_str)
                     # 通过keyId获取详情
                     tmp_detail_res = OlivaDiceOdyssey.webTool.getCnmodsDetailReq(tmp_keyId)
-                    if tmp_detail_res != None:
+                    if tmp_detail_res is not None:
                         try:
                             if (
                                 'data' in tmp_detail_res
-                                and tmp_detail_res['data'] != None
+                                and tmp_detail_res['data'] is not None
                                 and 'module' in tmp_detail_res['data']
                             ):
                                 tmp_reply_str = replyCnmodsDetail(tmp_detail_res['data']['module'])
                             else:
                                 dictTValue['tKeyId'] = str(tmp_keyId)
                                 tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindNotFound'].format(**dictTValue)
-                        except:
+                        except Exception:
                             tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindError']
                     else:
                         tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindErrorRetry']
                 else:
                     tmp_reply_str = dictStrCustom['strOdysseyCnmodsFindOnlyNumber']
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             elif isMatchWordStart(tmp_reast_str, 'get'):
                 tmp_reast_str = getMatchWordStartRight(tmp_reast_str, 'get')
@@ -457,7 +457,7 @@ def unity_reply(plugin_event, Proc):
                 # 情况1: 无参数 - 显示缓存
                 if tmp_reast_str == '':
                     if (
-                        tmp_res != None
+                        tmp_res is not None
                         and 'data' in tmp_res
                         and 'list' in tmp_res['data']
                         and len(tmp_res['data']['list']) > 0
@@ -470,7 +470,7 @@ def unity_reply(plugin_event, Proc):
                 # 情况2: 数字参数 - 从缓存获取指定序号
                 elif tmp_reast_str.isdigit():
                     tmp_count_get = int(tmp_reast_str)
-                    if tmp_res != None and 'data' in tmp_res and 'list' in tmp_res['data']:
+                    if tmp_res is not None and 'data' in tmp_res and 'list' in tmp_res['data']:
                         if tmp_count_get >= 1 and tmp_count_get <= len(tmp_res['data']['list']):
                             tmp_get_res = tmp_res['data']['list'][tmp_count_get - 1]
                             tmp_reply_str = replyCnmodsDetail(tmp_get_res)
@@ -486,7 +486,7 @@ def unity_reply(plugin_event, Proc):
                     tmp_search_res = OlivaDiceOdyssey.webTool.getCnmodsReq(
                         title=tmp_reast_str, page=1, item_max=8, isRec=False, author=None
                     )
-                    if tmp_search_res != None and 'data' in tmp_search_res and 'list' in tmp_search_res['data']:
+                    if tmp_search_res is not None and 'data' in tmp_search_res and 'list' in tmp_search_res['data']:
                         tmp_list = tmp_search_res['data']['list']
                         # 检查是否有完全匹配的结果
                         tmp_exact_match = None
@@ -562,7 +562,7 @@ def unity_reply(plugin_event, Proc):
                     else:
                         tmp_reply_str = dictStrCustom['strOdysseyCnmodsGetSearchError']
 
-                if tmp_reply_str != None:
+                if tmp_reply_str is not None:
                     replyMsg(plugin_event, tmp_reply_str)
             else:
                 OlivaDiceCore.msgReply.replyMsgLazyHelpByEvent(plugin_event, 'cnmods')
@@ -580,7 +580,7 @@ def replyRULES_command(
     dictTValue,
     replyMsg,
 ):
-    tmp_hagID = None
+    tmp_hagID = None  # NOQA: F841
     tmp_bothash = plugin_event.bot_info.hash
     tmp_userID = plugin_event.data.user_id
     if isMatchWordStart(tmp_reast_str, 'rules'):
@@ -602,18 +602,18 @@ def replyRULES_command(
     tmp_keyword = tmp_keyword.rstrip(' ')
     tmp_item_max = 8
     tmp_item_max = OlivaDiceCore.console.getConsoleSwitchByHash('odysseyRulesItemLimit', tmp_bothash)
-    if not type(tmp_item_max) == int:
+    if not type(tmp_item_max) is int:
         tmp_item_max = 8
     if tmp_item_max < 1:
         tmp_item_max = 8
     tmp_total_page = 0
     if tmp_keyword != '':
         tmp_res = OlivaDiceOdyssey.webTool.getRulesReq(key=tmp_keyword, page=tmp_page - 1, item_max=tmp_item_max)
-        if (type(tmp_res) == dict and 'code' in tmp_res and 'status' in tmp_res) and (
+        if (type(tmp_res) is dict and 'code' in tmp_res and 'status' in tmp_res) and (
             tmp_res['code'] == 0 and tmp_res['status'] == 200
         ):
-            if 'data' in tmp_res and 'result' in tmp_res['data'] and type(tmp_res['data']['result']) == list:
-                if 'total' in tmp_res['data'] and type(tmp_res['data']['total']) == int:
+            if 'data' in tmp_res and 'result' in tmp_res['data'] and type(tmp_res['data']['result']) is list:
+                if 'total' in tmp_res['data'] and type(tmp_res['data']['total']) is int:
                     tmp_total_page = int(tmp_res['data']['total'] / tmp_item_max) + 1
                 if len(tmp_res['data']['result']) == 0:
                     tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(
@@ -640,14 +640,14 @@ def replyRULES_command(
                         tmp_data_list_this_keyword = 'N/A'
                         tmp_data_list_this_content = 'N/A'
                         if (
-                            type(data_list_this) == dict
+                            type(data_list_this) is dict
                             and 'rule' in data_list_this
                             and 'keyword' in data_list_this
                             and 'content' in data_list_this
                         ):
                             tmp_data_list_this_rule = data_list_this['rule']
                             tmp_data_list_this_keyword = data_list_this['keyword']
-                            tmp_data_list_this_content = data_list_this['content']
+                            tmp_data_list_this_content = data_list_this['content']  # NOQA: F841
                         result_list.append('%d. [%s]%s' % (count, tmp_data_list_this_rule, tmp_data_list_this_keyword))
                         count += 1
                     dictTValue['tResult'] = '%s\n====[第%d/%d页]====' % (
@@ -666,9 +666,9 @@ def replyRULES_command(
                         flagBlock='allowCommand',
                         hash=OlivaDiceCore.msgReplyModel.contextRegHash([None, tmp_userID]),
                     )
-                    if tmp_select == None:
+                    if tmp_select is None:
                         pass
-                    elif type(tmp_select) == str:
+                    elif type(tmp_select) is str:
                         if tmp_select.isdigit():
                             tmp_select = int(tmp_select)
                             if tmp_select >= 1 and tmp_select <= 8:
@@ -701,7 +701,7 @@ def replyRULES_command(
 
 
 def replyRULES_command_getResult(data_this, plugin_event, dictStrCustom, dictTValue, replyMsg):
-    if type(data_this) == dict and 'rule' in data_this and 'keyword' in data_this and 'content' in data_this:
+    if type(data_this) is dict and 'rule' in data_this and 'keyword' in data_this and 'content' in data_this:
         dictTValue['tResult'] = '[%s] - %s\n%s' % (data_this['rule'], data_this['keyword'], data_this['content'])
         tmp_reply_str = OlivaDiceCore.msgCustomManager.formatReplySTR(dictStrCustom['strOdysseyRulesShow'], dictTValue)
         replyMsg(plugin_event, tmp_reply_str)
@@ -713,7 +713,7 @@ def replyCnmodsList(mod_list_data, list_type, plugin_event, replyMsg, dictStrCus
     """
     tmp_reply_str = None
     if (
-        mod_list_data != None
+        mod_list_data is not None
         and 'data' in mod_list_data
         and 'list' in mod_list_data['data']
         and len(mod_list_data['data']['list']) > 0
