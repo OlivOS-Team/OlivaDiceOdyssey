@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=63.2.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "olivos-plugin-OlivaDiceOdyssey"
+version = "3.0.16"
+description = "本模块为OlivaDice的高阶模块，提供了一些涉及第三方合作的功能，它们或许是调用了第三方数据库，要么是涉及版权授权，又或者是单纯的过于依赖网络，总之这些功能由于第三方的参与很可能无法由插件开发者保证可靠性，但仍然很强大。例如魔都模组功能。"
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+    {name = "OlivOS-Team", email = "benzenpenxil@foxmail.com"}
+]
+license = {text = "AGPLv3 License"}
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "olivos",
+]
+
+[project.urls]
+Homepage = "https://wiki.dice.center/"
+Repository = "https://github.com/OlivOS-Team/OlivaDiceOdyssey"
+Issues = "https://github.com/OlivOS-Team/OlivaDiceOdyssey/issues"

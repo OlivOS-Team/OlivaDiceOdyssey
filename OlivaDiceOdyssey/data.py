@@ -15,8 +15,8 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 '''
 
 
-OlivaDiceOdyssey_ver = '3.0.15'
-OlivaDiceOdyssey_svn = 16
+OlivaDiceOdyssey_ver = '3.0.16'
+OlivaDiceOdyssey_svn = 17
 OlivaDiceOdyssey_ver_short = '%s(%s)' % (str(OlivaDiceOdyssey_ver), str(OlivaDiceOdyssey_svn))
 
 gProc = None
