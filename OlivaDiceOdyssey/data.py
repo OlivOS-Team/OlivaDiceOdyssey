@@ -14,8 +14,8 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 @Desc      :   None
 """
 
-OlivaDiceOdyssey_ver = '3.0.16'
-OlivaDiceOdyssey_svn = 17
+OlivaDiceOdyssey_ver = '3.0.18'
+OlivaDiceOdyssey_svn = 19
 OlivaDiceOdyssey_ver_short = '%s(%s)' % (str(OlivaDiceOdyssey_ver), str(OlivaDiceOdyssey_svn))
 
 gProc = None
