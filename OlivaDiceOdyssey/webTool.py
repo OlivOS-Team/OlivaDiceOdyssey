@@ -122,25 +122,26 @@ def downloadExtiverseDeckRemote(name, botHash='unity'):
         checkDict = {'deckclassic': '.json', 'deckyaml': '.yaml', 'deckexcel': '.xlsx'}
         dfix = checkDict[deck_type]
         with open(
-            os.path.join('plugin', 'data', 'OlivaDice', botHash, 'extend', deck_type, name + dfix),
+            os.path.join(OlivaDiceCore.data.dataDirRoot, botHash, 'extend', deck_type, name + dfix),
             'w',
             encoding='utf-8',
         ) as f:
             f.write(res_text)
         # 这里下载并解压资源文件
         if res_resource_list is not None and type(res_resource_list) is list:
+            tmp_resource_zip_path = OlivaDiceCore.data.dataDirRoot + OlivaDiceOdyssey.data.deckResourceTmpFile
             for resource_url_this in res_resource_list:
                 if type(resource_url_this) is str:
-                    GETHttpFile(resource_url_this, 'plugin/data/OlivaDice/unity/update/tmp_deck_resource.zip')
+                    GETHttpFile(resource_url_this, tmp_resource_zip_path)
                     with support_gbk(
-                        zipfile.ZipFile(
-                            'plugin/data/OlivaDice/unity/update/tmp_deck_resource.zip', 'r', zipfile.ZIP_DEFLATED
-                        )
+                        zipfile.ZipFile(tmp_resource_zip_path, 'r', zipfile.ZIP_DEFLATED)
                     ) as resourceFile:
                         resourceFile_list = resourceFile.namelist()
                         for resourceFile_list_this in resourceFile_list:
                             try:
-                                resourceFile.extract(resourceFile_list_this, 'data')
+                                resourceFile.extract(
+                                    resourceFile_list_this, OlivaDiceOdyssey.data.deckResourceExtractDir
+                                )
                             except Exception:
                                 pass
     return res

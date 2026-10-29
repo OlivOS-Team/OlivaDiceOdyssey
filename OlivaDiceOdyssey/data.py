@@ -14,8 +14,13 @@ _  / / /_  /  __  / __ | / /__  /| |_  / / /__  / _  /    __  __/
 @Desc      :   None
 """
 
-OlivaDiceOdyssey_ver = '3.0.18'
-OlivaDiceOdyssey_svn = 19
+OlivaDiceOdyssey_ver = '3.0.19'
+OlivaDiceOdyssey_svn = 20
 OlivaDiceOdyssey_ver_short = '%s(%s)' % (str(OlivaDiceOdyssey_ver), str(OlivaDiceOdyssey_svn))
+
+# 牌堆资源包的临时下载文件（相对 OlivaDiceCore.data.dataDirRoot）
+deckResourceTmpFile = '/unity/update/tmp_deck_resource.zip'
+# 牌堆资源包解压到 OlivOS 的资源目录（图片等）
+deckResourceExtractDir = './data'
 
 gProc = None
